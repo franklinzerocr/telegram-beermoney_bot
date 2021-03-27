@@ -1,6 +1,5 @@
 const db = require('./app/DB/db');
 const configFile = require('config');
-const token = require('./app/telegram/token');
 const Binance = require('node-binance-api');
 const bot = require('./app/telegram/bot');
 
@@ -20,9 +19,7 @@ const main = async () => {
     recvWindow: 10000, // Set a higher recvWindow to increase response timeout
   });
 
-  // let telegramToken = await token.generateTelegramLinkWithToken(DBsystem); // should pass a user?
-
-  await bot.go(DBsystem, binanceAPI);
+  await bot.go(DBsystem, DBbeermoney, binanceAPI);
 };
 
 main();
