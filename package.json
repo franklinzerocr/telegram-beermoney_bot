@@ -1,0 +1,29 @@
+{
+  "name": "telegram-beermoney_bot",
+  "version": "1.0.0",
+  "description": "a telegram bot for manage your beermoney.io account\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[Dto\u001b[3~\u001b[3~\u001b[C\u001b[",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/franklinzerocr/telegram-beermoney_bot.git"
+  },
+  "author": "G8",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/franklinzerocr/telegram-beermoney_bot/issues"
+  },
+  "homepage": "https://github.com/franklinzerocr/telegram-beermoney_bot#readme",
+  "dependencies": {
+    "config": "^3.3.6",
+    "jsonwebtoken": "^8.5.1",
+    "node-binance-api": "^0.12.5",
+    "node-schedule": "^2.0.0",
+    "open": "^7.3.1",
+    "promise-mysql": "^5.0.3",
+    "telegraf": "^4.0.1",
+    "telegraf-inline-menu": "^6.0.0"
+  }
+}

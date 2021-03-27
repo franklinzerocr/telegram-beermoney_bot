@@ -1,0 +1,22 @@
+{
+    "DB": {
+        "Host":"localhost", 
+        "User":"root", 
+        "Password":"",
+        "DatabaseName": "beermoney"
+    },
+    "DB2": {
+        "Host":"localhost", 
+        "User":"root", 
+        "Password":"",
+        "DatabaseName": "beermoney_io"
+    },
+    "binance": {
+      "public": "gqv6QLo33ZT1zXSjn6TwVtd1UDB670xH9E31AY5kvXugHPXdAEqAlVEYFW205EvD",
+      "secret": "YF16NShNt7gBSUfRjK4lLWZy83pW3v0BXEPMqZFSrfveVnQ7trRyLRwrLZfZavxv"
+    },
+    "telegram":{
+        "key":"1797826423:AAF0Lrx9xvlvykOMYGT9wat3u7uM5m8Y7og",
+        "secret": "b33rm0n3yb0t"
+    }
+}
