@@ -4,7 +4,7 @@ async function getNewlyCreatedFloors(dbConnection) {
     let timeConditionEntry = '(UNIX_TIMESTAMP(CURRENT_TIME())-UNIX_TIMESTAMP(f.DateTime))/60 <1 AND (UNIX_TIMESTAMP(CURRENT_TIME())-UNIX_TIMESTAMP(f.DateTime))/60 >=0';
     let timeConditionEnd = '(UNIX_TIMESTAMP(CURRENT_TIME())-UNIX_TIMESTAMP(f.DateTime))/60 <1 AND (UNIX_TIMESTAMP(CURRENT_TIME())-UNIX_TIMESTAMP(f.DateTime))/60 >=0';
 
-    let result = await dbConnection.query('SELECT * FROM floor f WHERE DateTime IS NOT NULL AND ((Level=0 AND ' + timeConditionEntry + ') OR (Level=-2 AND ' + timeConditionEnd + ' AND Profit<=10)) AND TweetID is Null AND OrderID>0 ');
+    let result = await dbConnection.query('SELECT * FROM floor f WHERE DateTime IS NOT NULL AND ((Level=0 AND ' + timeConditionEntry + ') OR (Level=-2 AND ' + timeConditionEnd + ' )) AND TelegramID is Null AND OrderID>0 ');
     return result;
   } catch (e) {
     console.log(e);
@@ -24,8 +24,33 @@ async function getInitialFloor(dbConnection, tradingPlanID) {
     return false;
   }
 }
+async function getAlertOfFloor(dbConnection, floor) {
+  try {
+    let result = await dbConnection.query('SELECT ta.Channel Channel FROM trading_plan tp, trade_cycle tc, telegram_alert ta WHERE ta.ID=tc.FK_Telegram_Alert AND tc.ID=tp.FK_Trade_Cycle AND tp.ID=' + floor.FK_Trading_Plan);
+
+    return result[0];
+  } catch (e) {
+    console.log(e);
+    console.log('getAlertOfFloor Error');
+    return false;
+  }
+}
+
+async function updateTelegramFloor(dbConnection, floor, telegramID) {
+  try {
+    let result = await dbConnection.query('UPDATE floor SET TelegramID=' + telegramID + '  WHERE ID=' + floor.ID);
+
+    return result;
+  } catch (e) {
+    console.log(e);
+    console.log('updateTelegraamFloor Error');
+    return false;
+  }
+}
 
 module.exports = {
   getInitialFloor,
   getNewlyCreatedFloors,
+  updateTelegramFloor,
+  getAlertOfFloor,
 };

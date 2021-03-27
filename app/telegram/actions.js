@@ -2,7 +2,7 @@ const db = require('../DB/db');
 const binance = require('../binance/api');
 const util = require('../util');
 const { checkAuth } = require('./auth');
-const { mainMenuMessage, fundsMessage } = require('./messages');
+const { mainMenuMessage, fundsMessage, resultsChannelMessage } = require('./messages');
 
 async function beermoneyCommands(bot, dbConnection, binanceAPI) {
   await bot.command('balance', async (ctx, next) => {
@@ -18,6 +18,15 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI) {
   await bot.command('moneda', async (ctx, next) => {
     await ctx.scene.enter('CONTACT_DATA_WIZARD_SCENE_ID');
     bot.launch();
+  });
+  await bot.command('results', async (ctx, next) => {
+    resultsChannelMessage(ctx, bot);
+  });
+  await bot.command('depositar', async (ctx, next) => {
+    ctx.reply('STILL WORKING!!!');
+  });
+  await bot.command('retirar', async (ctx, next) => {
+    ctx.reply('STILL WORKING!!!');
   });
 }
 
