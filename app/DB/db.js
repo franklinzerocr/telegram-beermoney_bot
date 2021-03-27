@@ -1,6 +1,7 @@
 const mysql = require('promise-mysql');
 const users = require('./users');
 const funds = require('./funds');
+const trading_pool = require('./trading_pool');
 
 // Connect to the DB and get the Pool of it to perform querys
 function connection(database) {
@@ -19,4 +20,5 @@ module.exports = {
   connection,
   users,
   funds,
+  trading_pool,
 };

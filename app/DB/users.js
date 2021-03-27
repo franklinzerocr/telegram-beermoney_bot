@@ -1,4 +1,4 @@
-const updateUserT_userid = async (dbConnection, T_userid, username) => {
+const updateUserT_userid = async (dbConnection, username, T_userid) => {
   try {
     let result = await dbConnection.query("UPDATE users SET T_userid='" + T_userid + "' WHERE Username='" + username + "';");
     return result;

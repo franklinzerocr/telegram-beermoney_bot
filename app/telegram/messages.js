@@ -10,8 +10,13 @@ function fundsMessage(ctx, user, fundsDisplay, fundsFIAT) {
   ctx.reply(user.Username + ' tienes un balance de:\n\n' + fundsDisplay + ' -> ($' + fundsFIAT + ')');
 }
 
+function dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, BTCUSDT) {
+  bot.telegram.sendMessage(user.T_userid, 'Reporte diario 🍺😎\n\nTu ganancia BTC de hoy: ' + ROI + '%\nBalance: ' + fundsDisplay[0] + ' ($' + fundsFIAT[0] + ')\n\nPrecio de Bitcoin: $' + BTCUSDT + ' 🤑');
+}
+
 module.exports = {
   mainMenuMessage,
   fundsMessage,
   welcomeMessage,
+  dailyReportMessage,
 };
