@@ -3,6 +3,7 @@ const binance = require('../binance/api');
 const util = require('../util');
 const { checkAuth } = require('./auth');
 const { mainMenuMessage, fundsMessage, resultsChannelMessage } = require('./messages');
+const { currencyDisplayMenu } = require('./menu');
 
 async function beermoneyCommands(bot, dbConnection, binanceAPI) {
   await bot.command('balance', async (ctx, next) => {
@@ -15,10 +16,6 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI) {
     let fundsDisplay = user.Display == 'BTC' ? fundsBtc + ' BTC' : fundsSatoshis + ' sats';
     fundsMessage(ctx, user, fundsDisplay, fundsFIAT);
   });
-  await bot.command('moneda', async (ctx, next) => {
-    await ctx.scene.enter('CONTACT_DATA_WIZARD_SCENE_ID');
-    bot.launch();
-  });
   await bot.command('results', async (ctx, next) => {
     resultsChannelMessage(ctx, bot);
   });
@@ -28,6 +25,7 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI) {
   await bot.command('retirar', async (ctx, next) => {
     ctx.reply('STILL WORKING!!!');
   });
+  currencyDisplayMenu(bot, dbConnection);
 }
 
 async function beermoneyListeners(bot) {

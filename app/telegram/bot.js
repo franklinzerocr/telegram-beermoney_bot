@@ -2,11 +2,11 @@ const { Telegraf } = require('telegraf');
 const { beermoneyCommands, beermoneyListeners } = require('./actions');
 const { checkAuth } = require('./auth');
 const { beermoneyScenes } = require('./scenes');
-const { mainMenuMessage, welcomeMessage, unauthorizedMessage, resultsChannelMessage } = require('./messages');
-const util = require('../util');
+const { mainMenuMessage, welcomeMessage, unauthorizedMessage } = require('./messages');
 const { dailyReport, alertReport, initialMessage } = require('./autopilot');
+const config = require('config');
 // should be on .env file
-const bot = new Telegraf('1797826423:AAF0Lrx9xvlvykOMYGT9wat3u7uM5m8Y7og');
+const bot = new Telegraf(config.telegram.key);
 
 async function go(DBsystem, DBbeermoney, binanceAPI) {
   bot.start(async (ctx) => {
@@ -14,7 +14,6 @@ async function go(DBsystem, DBbeermoney, binanceAPI) {
     if (user) {
       welcomeMessage(ctx, user);
       mainMenuMessage(ctx);
-      resultsChannelMessage(ctx, bot);
       await beermoneyScenes(bot, DBsystem, binanceAPI);
       await beermoneyCommands(bot, DBsystem, binanceAPI);
       await beermoneyListeners(bot);

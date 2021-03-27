@@ -1,94 +1,49 @@
 const { MenuTemplate, MenuMiddleware, createBackMainMenuButtons } = require('telegraf-inline-menu');
+const { currencyMenuMessage, chosenCurrencyMessage } = require('./messages');
+const db = require('../DB/db');
+const { checkAuth } = require('./auth');
 
-const newMenuInteraction = async () => {
-  const menu = new MenuTemplate(() => 'Bienvenido\n' + new Date().toISOString());
+const currencyDisplayMenu = async (bot, dbConnection) => {
+  const menu = new MenuTemplate(() => currencyMenuMessage());
   let mainMenuToggle = false;
-  menu.toggle('toggle me', 'toggle me', {
-    set: (_, newState) => {
-      mainMenuToggle = newState;
-      // Update the menu afterwards
-      return true;
-    },
-    isSet: () => mainMenuToggle,
-  });
+  let message_id = 0;
 
-  menu.interact('interaction', 'interact', {
+  menu.interact('BTC', 'BTC', {
     hide: () => mainMenuToggle,
     do: async (ctx) => {
-      await ctx.answerCbQuery('you clicked me!');
-      // Do not update the menu afterwards
+      let user = await checkAuth(dbConnection, ctx.update.callback_query.from.username, ctx.update.callback_query.from.id);
+      await db.users.updateUserCurrency(dbConnection, user.Username, 'BTC');
+      chosenCurrencyMessage(ctx, 'BTC');
+      ctx.deleteMessage(message_id);
+      mainMenuToggle = true;
       return false;
     },
   });
 
-  menu.interact('update after action', 'update afterwards', {
+  menu.interact('sats', 'sats', {
     joinLastRow: true,
     hide: () => mainMenuToggle,
     do: async (ctx) => {
-      await ctx.answerCbQuery('I will update the menu now…');
-
-      return true;
-
-      // You can return true to update the same menu or use a relative path
-      // For example '.' for the same menu or '..' for the parent menu
-      // return '.'
-    },
-  });
-
-  const menuMiddleware = new MenuMiddleware('/', menu);
-  bot.command('menu', async (ctx) => menuMiddleware.replyToContext(ctx));
-  bot.use(menuMiddleware.middleware());
-
-  bot.catch((error) => {
-    console.log('telegraf error', error.response, error.parameters, error.on || error);
-  });
-};
-
-const currencyInteraction = async () => {
-  const menu = new MenuTemplate(() => 'Bienvenido\n' + new Date().toISOString());
-  let mainMenuToggle = false;
-  menu.toggle('toggle me', 'toggle me', {
-    set: (_, newState) => {
-      mainMenuToggle = newState;
-      // Update the menu afterwards
-      return true;
-    },
-    isSet: () => mainMenuToggle,
-  });
-
-  menu.interact('interaction', 'interact', {
-    hide: () => mainMenuToggle,
-    do: async (ctx) => {
-      await ctx.answerCbQuery('you clicked me!');
-      // Do not update the menu afterwards
+      let user = await checkAuth(dbConnection, ctx.update.callback_query.from.username, ctx.update.callback_query.from.id);
+      await db.users.updateUserCurrency(dbConnection, user.Username, 'sats');
+      chosenCurrencyMessage(ctx, 'sats');
+      ctx.deleteMessage(message_id);
+      mainMenuToggle = true;
       return false;
     },
   });
 
-  menu.interact('update after action', 'update afterwards', {
-    joinLastRow: true,
-    hide: () => mainMenuToggle,
-    do: async (ctx) => {
-      await ctx.answerCbQuery('I will update the menu now…');
-
-      return true;
-
-      // You can return true to update the same menu or use a relative path
-      // For example '.' for the same menu or '..' for the parent menu
-      // return '.'
-    },
-  });
-
   const menuMiddleware = new MenuMiddleware('/', menu);
-  console.log(menuMiddleware.tree());
-  bot.command('menu', async (ctx) => menuMiddleware.replyToContext(ctx));
-  bot.use(menuMiddleware.middleware());
 
-  bot.catch((error) => {
-    console.log('telegraf error', error.response, error.parameters, error.on || error);
+  bot.command('moneda', async (ctx) => {
+    mainMenuToggle = false;
+    let status = await menuMiddleware.replyToContext(ctx);
+    message_id = status.message_id;
   });
+
+  bot.use(menuMiddleware.middleware());
 };
 
 module.exports = {
-  newMenuInteraction,
+  currencyDisplayMenu,
 };

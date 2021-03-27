@@ -18,6 +18,16 @@ const updateUserUsername = async (dbConnection, username, T_userid) => {
   }
 };
 
+const updateUserCurrency = async (dbConnection, username, display) => {
+  try {
+    let result = await dbConnection.query("UPDATE users SET Display='" + display + "' WHERE Username='" + username + "';");
+    return result;
+  } catch (e) {
+    console.log(e);
+    console.log('updateUserCurrency error');
+  }
+};
+
 async function getAllUsers(dbConnection) {
   try {
     let result = await dbConnection.query('SELECT * FROM users');
@@ -57,4 +67,5 @@ module.exports = {
   getUserByUsername,
   getUserByT_userid,
   updateUserUsername,
+  updateUserCurrency,
 };

@@ -1,8 +1,8 @@
 const { session, Scenes } = require('telegraf');
 
 async function beermoneyScenes(bot, dbConnection, binanceAPI) {
-  const contactDataWizard = new Scenes.WizardScene(
-    'CONTACT_DATA_WIZARD_SCENE_ID', // first argument is Scene_ID, same as for BaseScene
+  const currencyDisplayWizard = new Scenes.WizardScene(
+    'CURRENCY_DISPLAY_ID', // first argument is Scene_ID, same as for BaseScene
     (ctx) => {
       ctx.reply('What is your name?');
       ctx.wizard.state.contactData = {};
@@ -26,7 +26,7 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI) {
     }
   );
 
-  const stage = new Scenes.Stage([contactDataWizard]);
+  const stage = new Scenes.Stage([currencyDisplayWizard]);
   bot.use(session()); // to  be precise, session is not a must have for Scenes to work, but it sure is lonely without one
   bot.use(stage.middleware());
 }

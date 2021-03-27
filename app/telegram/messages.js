@@ -29,6 +29,14 @@ async function resultsChannelMessage(ctx, bot) {
   ctx.reply('Ingresa al canal privado de Beermoney aqui ' + inviteLink);
 }
 
+function currencyMenuMessage() {
+  return 'Elige la unidad de moneda a mostrar';
+}
+
+function chosenCurrencyMessage(ctx, currency) {
+  ctx.replyWithMarkdown('Los montos se mostraran en: *' + currency + '*');
+}
+
 module.exports = {
   mainMenuMessage,
   fundsMessage,
@@ -37,4 +45,6 @@ module.exports = {
   rebootInitialMessage,
   unauthorizedMessage,
   resultsChannelMessage,
+  currencyMenuMessage,
+  chosenCurrencyMessage,
 };
