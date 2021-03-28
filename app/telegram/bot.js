@@ -14,8 +14,8 @@ async function go(DBsystem, DBbeermoney, binanceAPI) {
     if (user) {
       welcomeMessage(ctx, user);
       mainMenuMessage(ctx);
-      await beermoneyScenes(bot, DBsystem, binanceAPI);
-      await beermoneyCommands(bot, DBsystem, binanceAPI);
+      await beermoneyScenes(bot, DBsystem, binanceAPI, user);
+      await beermoneyCommands(bot, DBsystem, binanceAPI, user);
       await beermoneyListeners(bot);
     } else {
       unauthorizedMessage(ctx);

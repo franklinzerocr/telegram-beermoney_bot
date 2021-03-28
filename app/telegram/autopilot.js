@@ -12,6 +12,7 @@ async function waitForBeermoneyBot(dbConnection) {
     console.log('- Wait 1min for Beermoney System Update');
     await util.sleep(60000);
   }
+  await util.sleep(60000);
 }
 
 async function dailyReport(bot, dbConnection, binanceAPI) {
@@ -33,8 +34,10 @@ async function dailyReport(bot, dbConnection, binanceAPI) {
           fundsDisplay.push(user.Display == 'BTC' ? fundsBtc + ' BTC' : util.numberWithCommas(fundsSatoshis) + ' sats');
         }
         let ROI = ((fundsDisplay2[0] * 100) / fundsDisplay2[1] - 100).toFixed(2);
+        let earnings = fundsDisplay2[0] - fundsDisplay2[1];
+        earnings += user.Display == 'BTC' ? ' BTC' : ' sats';
         BTCUSDT = util.numberWithCommas(Math.floor(BTCUSDT));
-        dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, BTCUSDT);
+        dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, BTCUSDT, earnings);
       }
     }
   });
@@ -54,14 +57,14 @@ async function alertReport(bot, dbConnection) {
       message = '';
       status = {};
 
-      let alert = await getAlertOfFloor(dbConnection, floor);
+      // let alert = await getAlertOfFloor(dbConnection, floor);
 
       // ENTRY
       if (floor.Level == 0) {
         message += '#TradingPlan' + floor.FK_Trading_Plan + ' START 🔥\n\n';
         message += floor.Asset + ' / #BTC\n';
         message += 'Entry Buy Price: ' + floor.Price + ' sats \n';
-        message += 'Channel: ' + alert.Channel;
+        // message += 'Channel: ' + alert.Channel;
         status = await bot.telegram.sendMessage(config.channel, message);
         //EXIT
       } else {
