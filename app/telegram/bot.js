@@ -10,7 +10,7 @@ const bot = new Telegraf(config.telegram.key);
 
 async function go(DBsystem, DBbeermoney, binanceAPI) {
   bot.start(async (ctx) => {
-    let user = await checkAuth(DBsystem, ctx.update.message.from.username, ctx.update.message.from.id);
+    let user = await checkAuth(DBsystem, ctx.update.message.from.username, ctx.update.message.from.id, ctx);
     if (user) {
       welcomeMessage(ctx, user);
       mainMenuMessage(ctx);

@@ -1,7 +1,7 @@
 const db = require('../DB/db');
 const { resultsChannelMessage } = require('./messages');
 
-async function checkAuth(dbConnection, username, T_userid) {
+async function checkAuth(dbConnection, username, T_userid, ctx) {
   let userByID = await db.users.getUserByT_userid(dbConnection, T_userid);
   let userByUsername = await db.users.getUserByUsername(dbConnection, username);
   if (userByID && userByUsername && userByID.T_userid == userByUsername.T_userid && userByID.Username == userByUsername.Username) {

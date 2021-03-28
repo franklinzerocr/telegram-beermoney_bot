@@ -3,6 +3,7 @@ const users = require('./users');
 const funds = require('./funds');
 const trading_pool = require('./trading_pool');
 const operations = require('./operations');
+const wallet_address = require('./wallet_address');
 
 // Connect to the DB and get the Pool of it to perform querys
 function connection(database) {
@@ -23,4 +24,5 @@ module.exports = {
   funds,
   trading_pool,
   operations,
+  wallet_address,
 };

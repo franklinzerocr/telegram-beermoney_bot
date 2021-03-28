@@ -1,7 +1,7 @@
 const { session, Scenes } = require('telegraf');
 const { checkAuth } = require('./auth');
 const db = require('../DB/db');
-const { showDepositAddressMessage, realTxidMessage, depositStoredMessage, realAmountMessage, btcWithdrawalInstructionsMessage, satsWithdrawalInstructionsMessage, withdrawalStoredMessage, fiatWithdrawalInstructionsMessage } = require('./messages');
+const { realWalletMessage, walletUpdateMessage, updateWalletAddressInstructionalMessage, showDepositAddressInstructionalMessage, realTxidMessage, depositStoredMessage, realAmountMessage, btcWithdrawalInstructionsMessage, satsWithdrawalInstructionsMessage, withdrawalStoredMessage, fiatWithdrawalInstructionsMessage } = require('./messages');
 const util = require('../util');
 const binance = require('../binance/api');
 
@@ -10,11 +10,12 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
     'DEPOSIT_ID', // first argument is Scene_ID, same as for BaseScene
     async (ctx) => {
       let walletAddress = await binanceAPI.depositAddress('BTC');
-      await showDepositAddressMessage(ctx, walletAddress.address, user.Capacity);
+      // console.log(walletAddress);
+      await showDepositAddressInstructionalMessage(ctx, walletAddress.address, user.Capacity);
       return ctx.wizard.next();
     },
     async (ctx) => {
-      if (String(ctx.message.text).toUpperCase() == 'EXIT') ctx.scene.leave();
+      if (String(ctx.message.text).toUpperCase().includes('EXIT')) await ctx.scene.leave();
 
       let txId = String(ctx.message.text);
       if (txId.length < 10) {
@@ -25,7 +26,7 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
       let lastFunds = await db.funds.getLastFundsFromUser(dbConnection, user);
       await db.operations.storeDepositOperation(dbConnection, lastFunds, txId);
       depositStoredMessage(ctx);
-      return ctx.scene.leave();
+      return await ctx.scene.leave();
     }
   );
   const withdrawBtcWizard = new Scenes.WizardScene(
@@ -44,7 +45,7 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
     },
     async (ctx) => {
       // validation example
-      if (String(ctx.message.text).toUpperCase() == 'EXIT') ctx.scene.leave();
+      if (String(ctx.message.text).toUpperCase().includes('EXIT')) await ctx.scene.leave();
 
       let amount = Number(ctx.message.text);
       if (!amount || amount < ctx.wizard.state.withdrawal.minBtc || amount > ctx.wizard.state.withdrawal.fundsBtc) {
@@ -56,7 +57,7 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
       amount = util.btcToSatoshi(amount);
       await db.operations.storeWithdrawalOperation(dbConnection, lastFunds, amount);
       withdrawalStoredMessage(ctx);
-      return ctx.scene.leave();
+      return await ctx.scene.leave();
     }
   );
 
@@ -77,7 +78,7 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
     },
     async (ctx) => {
       // validation example
-      if (String(ctx.message.text).toUpperCase() == 'EXIT') ctx.scene.leave();
+      if (String(ctx.message.text).toUpperCase().includes('EXIT')) await ctx.scene.leave();
 
       let amount = Number(ctx.message.text);
       if (!amount || amount < ctx.wizard.state.withdrawal.minSats || amount > ctx.wizard.state.withdrawal.fundsSats) {
@@ -88,7 +89,7 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
       let lastFunds = await db.funds.getLastFundsFromUser(dbConnection, user);
       await db.operations.storeWithdrawalOperation(dbConnection, lastFunds, amount);
       withdrawalStoredMessage(ctx);
-      return ctx.scene.leave();
+      return await ctx.scene.leave();
     }
   );
 
@@ -108,7 +109,7 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
     },
     async (ctx) => {
       // validation example
-      if (String(ctx.message.text).toUpperCase() == 'EXIT') ctx.scene.leave();
+      if (String(ctx.message.text).toUpperCase().includes('EXIT')) await ctx.scene.leave();
 
       let amount = Number(ctx.message.text);
       if (!amount || amount < ctx.wizard.state.withdrawal.minFIAT || amount > ctx.wizard.state.withdrawal.fundsFIAT) {
@@ -121,11 +122,36 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
       amount = util.btcToSatoshi((amount / BTCUSDT).toFixed(8));
       await db.operations.storeWithdrawalOperation(dbConnection, lastFunds, amount);
       withdrawalStoredMessage(ctx);
-      return ctx.scene.leave();
+      return await ctx.scene.leave();
     }
   );
 
-  const stage = new Scenes.Stage([depositWizard, withdrawFiatWizard, withdrawSatsWizard, withdrawBtcWizard]);
+  const walletWizard = new Scenes.WizardScene(
+    'WALLET_UPDATE_ID', // first argument is Scene_ID, same as for BaseScene
+    async (ctx) => {
+      user = await db.users.getUserByT_userid(dbConnection, user.T_userid);
+      let wallet = await db.wallet_address.getWalletFromUser(dbConnection, user);
+      await updateWalletAddressInstructionalMessage(ctx, wallet);
+      return ctx.wizard.next();
+    },
+    async (ctx) => {
+      if (String(ctx.message.text).toUpperCase().includes('EXIT')) await ctx.scene.leave();
+
+      let walletAddress = String(ctx.message.text);
+      if (walletAddress.length < 27) {
+        realWalletMessage(ctx);
+        return;
+      }
+
+      user = await db.users.getUserByT_userid(dbConnection, user.T_userid);
+      let wallet = await db.wallet_address.getWalletFromUser(dbConnection, user);
+      await db.wallet_address.updateWalletAddress(dbConnection, wallet, walletAddress);
+      walletUpdateMessage(ctx);
+      return await ctx.scene.leave();
+    }
+  );
+
+  const stage = new Scenes.Stage([depositWizard, withdrawFiatWizard, withdrawSatsWizard, withdrawBtcWizard, walletWizard]);
   bot.use(session()); // to  be precise, session is not a must have for Scenes to work, but it sure is lonely without one
   bot.use(stage.middleware());
 }

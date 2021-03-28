@@ -27,7 +27,8 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
     await bot.launch();
   });
   await bot.command('wallet', async (ctx, next) => {
-    ctx.reply('COMING SOON!');
+    ctx.scene.enter('WALLET_UPDATE_ID');
+    await bot.launch();
   });
 
   let menuTemplate = new MenuTemplate();
