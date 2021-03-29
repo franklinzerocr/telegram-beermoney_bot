@@ -2,10 +2,9 @@ const db = require('../DB/db');
 const schedule = require('node-schedule');
 const binance = require('../binance/api');
 const util = require('../util');
-const { dailyReportMessage, mainMenuMessage, rebootInitialMessage } = require('./messages');
+const { dailyReportMessage, rebootInitialMessage } = require('./messages');
 const config = require('config');
 const { getNewlyCreatedFloors, updateTelegramFloor, getInitialFloor, getAlertOfFloor } = require('../DB/floors');
-const { getAllUsers } = require('../DB/users');
 
 async function waitForBeermoneyBot(dbConnection) {
   while ((await db.trading_pool.checkDiffTradingPool(dbConnection)).length == 0) {
@@ -61,7 +60,7 @@ async function alertReport(bot, dbConnection) {
 
       // ENTRY
       if (floor.Level == 0) {
-        message += '#TradingPlan' + floor.FK_Trading_Plan + ' START 🔥\n\n';
+        message += '#TradingPlan' + floor.FK_Trading_Plan + ' START!!!\n\n';
         message += floor.Asset + ' / #BTC\n';
         message += 'Entry Buy Price: ' + floor.Price + ' sats \n';
         // message += 'Channel: ' + alert.Channel;
@@ -74,15 +73,15 @@ async function alertReport(bot, dbConnection) {
         let dateDiff = ((dateLast - dateInit) / 1000 / 60).toFixed(0);
 
         // PROFIT
-        if (floor.NetProfit >= 0) {
+        if (floor.NetProfit - 100 >= 0) {
           message += 'Exit Sell Price: ' + floor.Price + ' sats\n';
-          message += 'Profit: ' + floor.NetProfit + '% 😎🍺\n';
-          message += 'Duration: ' + dateDiff + 'min';
+          message += 'Duration: ' + dateDiff + 'min\n';
+          message += 'Profit: ' + (floor.NetProfit - 100).toFixed(2) + '% 😎🍺';
           // LOSS
         } else {
           message += 'Exit Sell Price: ' + floor.Price + ' sats\n';
-          message += 'Loss: ' + floor.NetProfit + '% 😢💸\n\n';
-          message += 'Duration: ' + dateDiff + 'min';
+          message += 'Duration: ' + dateDiff + 'min\n';
+          message += 'Loss: ' + (floor.NetProfit - 100).toFixed(2) + '% 😢💸';
         }
 
         status = await bot.telegram.sendMessage(config.channel, message, { reply_to_message_id: initialFloor.TelegramID });

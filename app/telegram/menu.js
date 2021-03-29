@@ -4,7 +4,7 @@ const db = require('../DB/db');
 const { checkAuth } = require('./auth');
 
 const currencyDisplayMenu = async (dbConnection, menuTemplate) => {
-  const menuCurrency = new MenuTemplate(() => currencyMenuMessage());
+  const menuCurrency = new MenuTemplate(async () => await currencyMenuMessage());
   let mainMenuToggle = false;
 
   menuCurrency.interact('Show BTC', 'BTC', {
@@ -12,7 +12,7 @@ const currencyDisplayMenu = async (dbConnection, menuTemplate) => {
     do: async (ctx) => {
       let user = await checkAuth(dbConnection, ctx.update.callback_query.from.username, ctx.update.callback_query.from.id);
       await db.users.updateUserCurrency(dbConnection, user.Username, 'BTC');
-      chosenCurrencyMessage(ctx, 'BTC');
+      await chosenCurrencyMessage(ctx, 'BTC');
       await deleteMenuFromContext(ctx);
       return false;
     },
@@ -24,7 +24,7 @@ const currencyDisplayMenu = async (dbConnection, menuTemplate) => {
     do: async (ctx) => {
       let user = await checkAuth(dbConnection, ctx.update.callback_query.from.username, ctx.update.callback_query.from.id);
       await db.users.updateUserCurrency(dbConnection, user.Username, 'sats');
-      chosenCurrencyMessage(ctx, 'sats');
+      await chosenCurrencyMessage(ctx, 'sats');
       await deleteMenuFromContext(ctx);
       return false;
     },
@@ -36,8 +36,8 @@ const currencyDisplayMenu = async (dbConnection, menuTemplate) => {
 };
 
 const withdrawMenu = async (bot, menuTemplate) => {
-  const menuBtc = new MenuTemplate(() => currencyWithdrawMessage());
-  const menuSats = new MenuTemplate(() => currencyWithdrawMessage());
+  const menuBtc = new MenuTemplate(async () => await currencyWithdrawMessage());
+  const menuSats = new MenuTemplate(async () => await currencyWithdrawMessage());
   let mainMenuToggleBtc = false;
   let mainMenuToggleSats = false;
 

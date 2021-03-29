@@ -1,5 +1,5 @@
 const { Telegraf } = require('telegraf');
-const { beermoneyCommands, beermoneyListeners } = require('./actions');
+const { beermoneyCommands } = require('./actions');
 const { checkAuth } = require('./auth');
 const { beermoneyScenes } = require('./scenes');
 const { mainMenuMessage, welcomeMessage, unauthorizedMessage } = require('./messages');
@@ -12,16 +12,16 @@ async function go(DBsystem, DBbeermoney, binanceAPI) {
   bot.start(async (ctx) => {
     let user = await checkAuth(DBsystem, ctx.update.message.from.username, ctx.update.message.from.id, ctx);
     if (user) {
-      welcomeMessage(ctx, user);
-      mainMenuMessage(ctx);
-      await beermoneyScenes(bot, DBsystem, binanceAPI, user);
-      await beermoneyCommands(bot, DBsystem, binanceAPI, user);
-      await beermoneyListeners(bot);
+      await welcomeMessage(ctx, user);
+      await mainMenuMessage(ctx);
+      await beermoneyCommands(bot, DBsystem, binanceAPI);
     } else {
-      unauthorizedMessage(ctx);
+      await unauthorizedMessage(ctx);
       console.log('NOT ->' + ctx.update.message.from.username + ' - ' + ctx.update.message.from.id);
     }
   });
+
+  await beermoneyScenes(bot, DBsystem, binanceAPI);
 
   bot.launch();
 
@@ -29,6 +29,7 @@ async function go(DBsystem, DBbeermoney, binanceAPI) {
     console.log('------- telegraf error------\n', error);
   });
 
+  // Autopilot BOT
   await initialMessage(bot, DBsystem);
   await dailyReport(bot, DBsystem, binanceAPI);
   await alertReport(bot, DBbeermoney);
@@ -36,7 +37,6 @@ async function go(DBsystem, DBbeermoney, binanceAPI) {
   // Enable graceful stop
   process.once('SIGINT', () => bot.stop('SIGINT'));
   process.once('SIGTERM', () => bot.stop('SIGTERM'));
-  // }
 }
 
 module.exports = {

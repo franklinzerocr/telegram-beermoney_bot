@@ -1,27 +1,27 @@
 const config = require('config');
 
-function welcomeMessage(ctx, user) {
+async function welcomeMessage(ctx, user) {
   ctx.reply('¡Bienvenid@ ' + user.Username + '!\nHas vinculado tu cuenta exitosamente');
 }
 
-function mainMenuMessage(ctx) {
-  ctx.reply('Beermoney BOT tienes las siguientes opciones:\n\n/balance - Checa tu balance actual en Beermoney\n/depositar - Ingresa un deposito a Beermoney\n/retirar - Retira tus fondos de Beermoney a tu wallet\n/wallet - Gestiona tu wallet\n/moneda - Cambia la moneda de las unidades (BTC o sats)\n/results - Obten link para canal privado de resultados\n\nSupport: @franklinzerocr\n🍺😎');
+async function mainMenuMessage(ctx) {
+  ctx.reply('Beermoney BOT tienes las siguientes opciones:\n\n/wallet - Checa tu balance actual en Beermoney\n/depositar - Ingresa un deposito a Beermoney\n/retirar - Retira tus fondos de Beermoney\n/config - Gestiona tu wallet de retiro\n/moneda - Cambia la unidad de cuenta (BTC o sats)\n/results - Obten link para el canal de telegram privado\n\nSupport: @franklinzerocr\n🍺😎');
 }
 
-function fundsMessage(ctx, user, fundsDisplay, fundsFIAT, maxCapDisplay) {
+async function fundsMessage(ctx, user, fundsDisplay, fundsFIAT, maxCapDisplay) {
   ctx.replyWithMarkdown(user.Username + ' tienes un balance de:\n*' + fundsDisplay + '* -> ($' + fundsFIAT + ')\nCapacidad Máxima: ' + maxCapDisplay);
 }
 
-function dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, BTCUSDT, earnings) {
+async function dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, BTCUSDT, earnings) {
   ROI = ROI >= 0 ? '+' + ROI : '-' + ROI;
   bot.telegram.sendMessage(user.T_userid, 'Reporte diario 🍺😎\n\nHoy ganaste:\n' + earnings + ' (' + ROI + '%)\n\nBalance Actual:\n' + fundsDisplay[0] + ' ($' + fundsFIAT[0] + ')\n\nPrecio del Bitcoin: $' + BTCUSDT + ' 🤑');
 }
 
-function rebootInitialMessage(bot, user) {
+async function rebootInitialMessage(bot, user) {
   bot.telegram.sendMessage(user.T_userid, '🔔 Beermoney BOT acaba de ser actualizado.\n\n Porfavor reinicia el BOT con /start');
 }
 
-function unauthorizedMessage(ctx) {
+async function unauthorizedMessage(ctx) {
   ctx.reply('No estas Autorizado para usar Beermoney');
 }
 
@@ -30,64 +30,64 @@ async function resultsChannelMessage(ctx, bot) {
   ctx.reply('Ingresa al canal privado de Beermoney aqui ' + inviteLink);
 }
 
-function currencyMenuMessage() {
+async function currencyMenuMessage() {
   return 'Elige la unidad de moneda a mostrar';
 }
 
-function chosenCurrencyMessage(ctx, currency) {
+async function chosenCurrencyMessage(ctx, currency) {
   ctx.replyWithMarkdown('Los montos se mostraran en: *' + currency + '*');
 }
 
 async function showDepositAddressInstructionalMessage(ctx, address) {
-  await ctx.replyWithMarkdown('*- Ingresa el* _TxId_ *del deposito que realizaste a esta direccion* 👇 o /exit');
+  await ctx.replyWithMarkdown('*- Ingresa el* _TxId_ *del deposito que realizaste a esta direccion* 👇 o /backToMenu');
   await ctx.reply(address);
 }
 
-function realTxidMessage(ctx) {
-  ctx.reply('🚫 Porfavor ingresa un txId correcto o /exit');
+async function realTxidMessage(ctx) {
+  ctx.reply('🚫 Porfavor ingresa un txId correcto o /backToMenu');
 }
 
-function depositStoredMessage(ctx) {
+async function depositStoredMessage(ctx) {
   ctx.replyWithMarkdown('✅ Tu _Deposito_ ha sido registrado con exito. Espera al proximo corte diario para que se actualicen tus fondos');
 }
 
-function currencyWithdrawMessage() {
+async function currencyWithdrawMessage() {
   return 'Elige la moneda para expresar el monto a retirar:';
 }
 
-function btcWithdrawalInstructionsMessage(ctx, fundsBtc, fundsFIAT, minBtc, minFIAT) {
+async function btcWithdrawalInstructionsMessage(ctx, fundsBtc, fundsFIAT, minBtc, minFIAT) {
   ctx.reply('Retiro maximo: ' + fundsBtc + ' BTC ($' + fundsFIAT + ')\nRetiro minimo: ' + minBtc + ' BTC ($' + minFIAT + ')');
-  ctx.replyWithMarkdown('*- Ingresa el monto en* _BTC_ *a retirar o /exit:*');
+  ctx.replyWithMarkdown('*- Ingresa el monto en* _BTC_ *a retirar o /backToMenu:*');
 }
 
-function realAmountMessage(ctx) {
-  ctx.reply('🚫 Porfavor ingresa un monto correcto dentro de los limites o /exit');
+async function realAmountMessage(ctx) {
+  ctx.reply('🚫 Porfavor ingresa un monto correcto dentro de los limites o /backToMenu');
 }
 
-function withdrawalStoredMessage(ctx) {
+async function withdrawalStoredMessage(ctx) {
   ctx.replyWithMarkdown('✅ Tu _Retiro_ ha sido registrado con exito. Espera al proximo corte diario para que se actualicen tus fondos');
 }
 
-function satsWithdrawalInstructionsMessage(ctx, fundsSats, fundsFIAT, minSats, minFIAT) {
+async function satsWithdrawalInstructionsMessage(ctx, fundsSats, fundsFIAT, minSats, minFIAT) {
   ctx.reply('Retiro maximo: ' + fundsSats + ' sats ($' + fundsFIAT + ')\nRetiro minimo: ' + minSats + ' sats ($' + minFIAT + ')');
-  ctx.replyWithMarkdown('*- Ingresa el monto en* _sats_ *a retirar o /exit:*');
+  ctx.replyWithMarkdown('*- Ingresa el monto en* _sats_ *a retirar o /backToMenu:*');
 }
 
-function fiatWithdrawalInstructionsMessage(ctx, fundsFIAT, minFIAT) {
+async function fiatWithdrawalInstructionsMessage(ctx, fundsFIAT, minFIAT) {
   ctx.reply('Retiro maximo: $' + fundsFIAT + '\nRetiro minimo: $' + minFIAT);
-  ctx.replyWithMarkdown('*- Ingresa el monto en* _FIAT_ *a retirar o /exit:*');
+  ctx.replyWithMarkdown('*- Ingresa el monto en* _FIAT_ *a retirar o /backToMenu:*');
 }
 
-function walletUpdateMessage(ctx) {
+async function walletUpdateMessage(ctx) {
   ctx.reply('✅ Wallet Actualizada');
 }
 
-function realWalletMessage(ctx) {
-  ctx.reply('🚫 Porfavor ingresa una Wallet correcta o /exit');
+async function realWalletMessage(ctx) {
+  ctx.reply('🚫 Porfavor ingresa una Wallet correcta o /backToMenu');
 }
 
 async function updateWalletAddressInstructionalMessage(ctx, wallet) {
-  await ctx.replyWithMarkdown('Tu wallet actual es:\n' + wallet.Wallet + '\n\n*- Ingresa la nueva* _Wallet Address_ *a utilizar en Beermoney o /exit* 👛');
+  await ctx.replyWithMarkdown('Tu wallet actual es:\n' + wallet.Wallet + '\n\n*- Ingresa la nueva* _Wallet Address_ *a utilizar en Beermoney o /backToMenu* 👛');
 }
 
 module.exports = {

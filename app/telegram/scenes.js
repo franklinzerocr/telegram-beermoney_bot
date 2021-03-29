@@ -1,38 +1,47 @@
 const { session, Scenes } = require('telegraf');
 const { checkAuth } = require('./auth');
 const db = require('../DB/db');
-const { realWalletMessage, walletUpdateMessage, updateWalletAddressInstructionalMessage, showDepositAddressInstructionalMessage, realTxidMessage, depositStoredMessage, realAmountMessage, btcWithdrawalInstructionsMessage, satsWithdrawalInstructionsMessage, withdrawalStoredMessage, fiatWithdrawalInstructionsMessage } = require('./messages');
+const { realWalletMessage, walletUpdateMessage, updateWalletAddressInstructionalMessage, showDepositAddressInstructionalMessage, realTxidMessage, depositStoredMessage, realAmountMessage, btcWithdrawalInstructionsMessage, satsWithdrawalInstructionsMessage, withdrawalStoredMessage, fiatWithdrawalInstructionsMessage, mainMenuMessage } = require('./messages');
 const util = require('../util');
 const binance = require('../binance/api');
 
-async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
+async function leaveSceneTimeout(ctx) {
+  setTimeout(async function tick() {
+    return await ctx.scene.leave();
+  }, 300000);
+}
+
+async function beermoneyScenes(bot, dbConnection, binanceAPI) {
   const depositWizard = new Scenes.WizardScene(
     'DEPOSIT_ID', // first argument is Scene_ID, same as for BaseScene
     async (ctx) => {
+      let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id, ctx);
       let walletAddress = await binanceAPI.depositAddress('BTC');
-      // console.log(walletAddress);
       await showDepositAddressInstructionalMessage(ctx, walletAddress.address, user.Capacity);
+      leaveSceneTimeout(ctx);
       return ctx.wizard.next();
     },
     async (ctx) => {
-      if (String(ctx.message.text).toUpperCase().includes('EXIT')) await ctx.scene.leave();
-
+      if (String(ctx.message.text).toUpperCase().includes('/BACKTOMENU')) {
+        await mainMenuMessage(ctx);
+        return await ctx.scene.leave();
+      }
       let txId = String(ctx.message.text);
       if (txId.length < 10) {
-        realTxidMessage(ctx);
+        await realTxidMessage(ctx);
         return;
       }
-      user = await db.users.getUserByT_userid(dbConnection, ctx.update.message.from.id);
+      let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id, ctx);
       let lastFunds = await db.funds.getLastFundsFromUser(dbConnection, user);
       await db.operations.storeDepositOperation(dbConnection, lastFunds, txId);
-      depositStoredMessage(ctx);
+      await depositStoredMessage(ctx);
       return await ctx.scene.leave();
     }
   );
   const withdrawBtcWizard = new Scenes.WizardScene(
     'WITHDRAW_BTC_ID', // first argument is Scene_ID, same as for BaseScene
     async (ctx) => {
-      user = await db.users.getUserByT_userid(dbConnection, ctx.update.message.from.id);
+      let user = await checkAuth(dbConnection, ctx.update.callback_query.from.username, ctx.update.callback_query.from.id);
       let BTCUSDT = (await binance.getTicker(binanceAPI)).BTCUSDT;
       let lastFunds = await db.funds.getLastFundsFromUser(dbConnection, user);
       let fundsBtc = util.satoshiToBTC(lastFunds.Amount);
@@ -40,23 +49,25 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
       let minBtc = 0.0005;
       let minFIAT = util.numberWithCommas((BTCUSDT * minBtc).toFixed(2));
       ctx.wizard.state.withdrawal = { fundsBtc: fundsBtc, fundsFIAT: fundsFIAT, minBtc: minBtc, minFIAT: minFIAT };
-      btcWithdrawalInstructionsMessage(ctx, fundsBtc, fundsFIAT, minBtc, minFIAT);
+      await btcWithdrawalInstructionsMessage(ctx, fundsBtc, fundsFIAT, minBtc, minFIAT);
       return ctx.wizard.next();
     },
     async (ctx) => {
-      // validation example
-      if (String(ctx.message.text).toUpperCase().includes('EXIT')) await ctx.scene.leave();
+      if (String(ctx.message.text).toUpperCase().includes('/BACKTOMENU')) {
+        await mainMenuMessage(ctx);
+        return await ctx.scene.leave();
+      }
 
       let amount = Number(ctx.message.text);
       if (!amount || amount < ctx.wizard.state.withdrawal.minBtc || amount > ctx.wizard.state.withdrawal.fundsBtc) {
-        realAmountMessage(ctx);
+        await realAmountMessage(ctx);
         return;
       }
-      user = await db.users.getUserByT_userid(dbConnection, ctx.update.message.from.id);
+      let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id, ctx);
       let lastFunds = await db.funds.getLastFundsFromUser(dbConnection, user);
       amount = util.btcToSatoshi(amount);
       await db.operations.storeWithdrawalOperation(dbConnection, lastFunds, amount);
-      withdrawalStoredMessage(ctx);
+      await withdrawalStoredMessage(ctx);
       return await ctx.scene.leave();
     }
   );
@@ -64,7 +75,7 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
   const withdrawSatsWizard = new Scenes.WizardScene(
     'WITHDRAW_SATS_ID', // first argument is Scene_ID, same as for BaseScene
     async (ctx) => {
-      user = await db.users.getUserByT_userid(dbConnection, ctx.update.message.from.id);
+      let user = await checkAuth(dbConnection, ctx.update.callback_query.from.username, ctx.update.callback_query.from.id);
       let BTCUSDT = (await binance.getTicker(binanceAPI)).BTCUSDT;
       let lastFunds = await db.funds.getLastFundsFromUser(dbConnection, user);
       let fundsBtc = util.satoshiToBTC(lastFunds.Amount);
@@ -73,22 +84,24 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
       let minSats = util.numberWithCommas(50000);
       let minFIAT = util.numberWithCommas((BTCUSDT * minBtc).toFixed(2));
       ctx.wizard.state.withdrawal = { fundsSats: lastFunds.Amount, fundsFIAT: fundsFIAT, minSats: minSats, minFIAT: minFIAT };
-      satsWithdrawalInstructionsMessage(ctx, util.numberWithCommas(lastFunds.Amount), fundsFIAT, minSats, minFIAT);
+      await satsWithdrawalInstructionsMessage(ctx, util.numberWithCommas(lastFunds.Amount), fundsFIAT, minSats, minFIAT);
       return ctx.wizard.next();
     },
     async (ctx) => {
-      // validation example
-      if (String(ctx.message.text).toUpperCase().includes('EXIT')) await ctx.scene.leave();
+      if (String(ctx.message.text).toUpperCase().includes('/BACKTOMENU')) {
+        await mainMenuMessage(ctx);
+        return await ctx.scene.leave();
+      }
 
       let amount = Number(ctx.message.text);
       if (!amount || amount < ctx.wizard.state.withdrawal.minSats || amount > ctx.wizard.state.withdrawal.fundsSats) {
-        realAmountMessage(ctx);
+        await realAmountMessage(ctx);
         return;
       }
-      user = await db.users.getUserByT_userid(dbConnection, ctx.update.message.from.id);
+      let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id, ctx);
       let lastFunds = await db.funds.getLastFundsFromUser(dbConnection, user);
       await db.operations.storeWithdrawalOperation(dbConnection, lastFunds, amount);
-      withdrawalStoredMessage(ctx);
+      await withdrawalStoredMessage(ctx);
       return await ctx.scene.leave();
     }
   );
@@ -96,7 +109,7 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
   const withdrawFiatWizard = new Scenes.WizardScene(
     'WITHDRAW_FIAT_ID', // first argument is Scene_ID, same as for BaseScene
     async (ctx) => {
-      user = await db.users.getUserByT_userid(dbConnection, ctx.update.message.from.id);
+      let user = await checkAuth(dbConnection, ctx.update.callback_query.from.username, ctx.update.callback_query.from.id);
       let BTCUSDT = (await binance.getTicker(binanceAPI)).BTCUSDT;
       let lastFunds = await db.funds.getLastFundsFromUser(dbConnection, user);
       let fundsBtc = util.satoshiToBTC(lastFunds.Amount * 0.99);
@@ -104,24 +117,26 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
       let minBtc = 0.000505;
       let minFIAT = util.numberWithCommas((BTCUSDT * minBtc).toFixed(2));
       ctx.wizard.state.withdrawal = { fundsFIAT: fundsFIAT, minFIAT: minFIAT };
-      fiatWithdrawalInstructionsMessage(ctx, fundsFIAT, minFIAT);
+      await fiatWithdrawalInstructionsMessage(ctx, fundsFIAT, minFIAT);
       return ctx.wizard.next();
     },
     async (ctx) => {
-      // validation example
-      if (String(ctx.message.text).toUpperCase().includes('EXIT')) await ctx.scene.leave();
+      if (String(ctx.message.text).toUpperCase().includes('/BACKTOMENU')) {
+        await mainMenuMessage(ctx);
+        return await ctx.scene.leave();
+      }
 
       let amount = Number(ctx.message.text);
       if (!amount || amount < ctx.wizard.state.withdrawal.minFIAT || amount > ctx.wizard.state.withdrawal.fundsFIAT) {
-        realAmountMessage(ctx);
+        await realAmountMessage(ctx);
         return;
       }
-      user = await db.users.getUserByT_userid(dbConnection, ctx.update.message.from.id);
+      let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id, ctx);
       let lastFunds = await db.funds.getLastFundsFromUser(dbConnection, user);
       let BTCUSDT = (await binance.getTicker(binanceAPI)).BTCUSDT;
       amount = util.btcToSatoshi((amount / BTCUSDT).toFixed(8));
       await db.operations.storeWithdrawalOperation(dbConnection, lastFunds, amount);
-      withdrawalStoredMessage(ctx);
+      await withdrawalStoredMessage(ctx);
       return await ctx.scene.leave();
     }
   );
@@ -129,24 +144,27 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
   const walletWizard = new Scenes.WizardScene(
     'WALLET_UPDATE_ID', // first argument is Scene_ID, same as for BaseScene
     async (ctx) => {
-      user = await db.users.getUserByT_userid(dbConnection, ctx.update.message.from.id);
+      let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id, ctx);
       let wallet = await db.wallet_address.getWalletFromUser(dbConnection, user);
       await updateWalletAddressInstructionalMessage(ctx, wallet);
       return ctx.wizard.next();
     },
     async (ctx) => {
-      if (String(ctx.message.text).toUpperCase().includes('EXIT')) await ctx.scene.leave();
+      if (String(ctx.message.text).toUpperCase().includes('/BACKTOMENU')) {
+        await mainMenuMessage(ctx);
+        return await ctx.scene.leave();
+      }
 
       let walletAddress = String(ctx.message.text);
       if (walletAddress.length < 27) {
-        realWalletMessage(ctx);
+        await realWalletMessage(ctx);
         return;
       }
 
-      user = await db.users.getUserByT_userid(dbConnection, ctx.update.message.from.id);
+      let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id, ctx);
       let wallet = await db.wallet_address.getWalletFromUser(dbConnection, user);
       await db.wallet_address.updateWalletAddress(dbConnection, wallet, walletAddress);
-      walletUpdateMessage(ctx);
+      await walletUpdateMessage(ctx);
       return await ctx.scene.leave();
     }
   );

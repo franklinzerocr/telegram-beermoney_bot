@@ -7,7 +7,7 @@ const { MenuMiddleware, MenuTemplate } = require('telegraf-inline-menu');
 const { currencyDisplayMenu, withdrawMenu } = require('./menu');
 
 async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
-  await bot.command('balance', async (ctx, next) => {
+  await bot.command('/wallet', async (ctx, next) => {
     await next();
     let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id);
     let funds = await db.funds.getLastFundsFromUser(dbConnection, user);
@@ -16,18 +16,19 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
     let fundsFIAT = ((await binance.getTicker(binanceAPI)).BTCUSDT * fundsBtc).toFixed(2);
     let fundsDisplay = user.Display == 'BTC' ? fundsBtc + ' BTC' : fundsSatoshis + ' sats';
     let maxCapDisplay = user.Display == 'BTC' ? util.satoshiToBTC(user.Capacity) + ' BTC' : util.numberWithCommas(user.Capacity) + ' sats';
-    fundsMessage(ctx, user, fundsDisplay, fundsFIAT, maxCapDisplay);
+    await fundsMessage(ctx, user, fundsDisplay, fundsFIAT, maxCapDisplay);
   });
-  await bot.command('results', async (ctx, next) => {
-    resultsChannelMessage(ctx, bot);
+  await bot.command('/results', async (ctx, next) => {
+    await resultsChannelMessage(ctx, bot);
   });
 
-  await bot.command('depositar', async (ctx, next) => {
-    ctx.scene.enter('DEPOSIT_ID');
+  await bot.command('/depositar', async (ctx) => {
+    await ctx.scene.enter('DEPOSIT_ID');
     await bot.launch();
   });
-  await bot.command('wallet', async (ctx, next) => {
-    ctx.scene.enter('WALLET_UPDATE_ID');
+
+  await bot.command('/config', async (ctx, next) => {
+    await ctx.scene.enter('WALLET_UPDATE_ID');
     await bot.launch();
   });
 
@@ -38,26 +39,27 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
 
   const menuMiddleware = new MenuMiddleware('/', menuTemplate);
 
-  bot.command('moneda', async (ctx) => {
+  bot.command('/moneda', async (ctx) => {
     await menuMiddleware.replyToContext(ctx, '/ChooseCurrency/');
   });
 
-  bot.command('retirar', async (ctx) => {
-    user = await db.users.getUserByT_userid(dbConnection, ctx.update.message.from.id);
+  bot.command('/retirar', async (ctx) => {
+    let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id);
     user.Display == 'BTC' ? await menuMiddleware.replyToContext(ctx, '/BtcWithdrawal/') : await menuMiddleware.replyToContext(ctx, '/SatsWithdrawal/');
   });
 
   bot.use(menuMiddleware.middleware());
+
+  beermoneyDefaultListener(bot);
 }
 
-async function beermoneyListeners(bot) {
+function beermoneyDefaultListener(bot) {
   // Default response
-  bot.on('text', (ctx) => {
-    if (!ctx.update.message.text.includes('/')) mainMenuMessage(ctx);
+  bot.on('text', async (ctx) => {
+    if (ctx.update.message.text.includes('/backToMenu') || ctx.update.message.text.includes('/menu') || !ctx.update.message.text.includes('/')) await mainMenuMessage(ctx);
   });
 }
 
 module.exports = {
   beermoneyCommands,
-  beermoneyListeners,
 };
