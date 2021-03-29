@@ -22,7 +22,7 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
         realTxidMessage(ctx);
         return;
       }
-      user = await db.users.getUserByT_userid(dbConnection, user.T_userid);
+      user = await db.users.getUserByT_userid(dbConnection, ctx.update.message.from.id);
       let lastFunds = await db.funds.getLastFundsFromUser(dbConnection, user);
       await db.operations.storeDepositOperation(dbConnection, lastFunds, txId);
       depositStoredMessage(ctx);
@@ -32,7 +32,7 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
   const withdrawBtcWizard = new Scenes.WizardScene(
     'WITHDRAW_BTC_ID', // first argument is Scene_ID, same as for BaseScene
     async (ctx) => {
-      user = await db.users.getUserByT_userid(dbConnection, user.T_userid);
+      user = await db.users.getUserByT_userid(dbConnection, ctx.update.message.from.id);
       let BTCUSDT = (await binance.getTicker(binanceAPI)).BTCUSDT;
       let lastFunds = await db.funds.getLastFundsFromUser(dbConnection, user);
       let fundsBtc = util.satoshiToBTC(lastFunds.Amount);
@@ -52,7 +52,7 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
         realAmountMessage(ctx);
         return;
       }
-      user = await db.users.getUserByT_userid(dbConnection, user.T_userid);
+      user = await db.users.getUserByT_userid(dbConnection, ctx.update.message.from.id);
       let lastFunds = await db.funds.getLastFundsFromUser(dbConnection, user);
       amount = util.btcToSatoshi(amount);
       await db.operations.storeWithdrawalOperation(dbConnection, lastFunds, amount);
@@ -64,7 +64,7 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
   const withdrawSatsWizard = new Scenes.WizardScene(
     'WITHDRAW_SATS_ID', // first argument is Scene_ID, same as for BaseScene
     async (ctx) => {
-      user = await db.users.getUserByT_userid(dbConnection, user.T_userid);
+      user = await db.users.getUserByT_userid(dbConnection, ctx.update.message.from.id);
       let BTCUSDT = (await binance.getTicker(binanceAPI)).BTCUSDT;
       let lastFunds = await db.funds.getLastFundsFromUser(dbConnection, user);
       let fundsBtc = util.satoshiToBTC(lastFunds.Amount);
@@ -85,7 +85,7 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
         realAmountMessage(ctx);
         return;
       }
-      user = await db.users.getUserByT_userid(dbConnection, user.T_userid);
+      user = await db.users.getUserByT_userid(dbConnection, ctx.update.message.from.id);
       let lastFunds = await db.funds.getLastFundsFromUser(dbConnection, user);
       await db.operations.storeWithdrawalOperation(dbConnection, lastFunds, amount);
       withdrawalStoredMessage(ctx);
@@ -96,7 +96,7 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
   const withdrawFiatWizard = new Scenes.WizardScene(
     'WITHDRAW_FIAT_ID', // first argument is Scene_ID, same as for BaseScene
     async (ctx) => {
-      user = await db.users.getUserByT_userid(dbConnection, user.T_userid);
+      user = await db.users.getUserByT_userid(dbConnection, ctx.update.message.from.id);
       let BTCUSDT = (await binance.getTicker(binanceAPI)).BTCUSDT;
       let lastFunds = await db.funds.getLastFundsFromUser(dbConnection, user);
       let fundsBtc = util.satoshiToBTC(lastFunds.Amount * 0.99);
@@ -116,7 +116,7 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
         realAmountMessage(ctx);
         return;
       }
-      user = await db.users.getUserByT_userid(dbConnection, user.T_userid);
+      user = await db.users.getUserByT_userid(dbConnection, ctx.update.message.from.id);
       let lastFunds = await db.funds.getLastFundsFromUser(dbConnection, user);
       let BTCUSDT = (await binance.getTicker(binanceAPI)).BTCUSDT;
       amount = util.btcToSatoshi((amount / BTCUSDT).toFixed(8));
@@ -129,7 +129,7 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
   const walletWizard = new Scenes.WizardScene(
     'WALLET_UPDATE_ID', // first argument is Scene_ID, same as for BaseScene
     async (ctx) => {
-      user = await db.users.getUserByT_userid(dbConnection, user.T_userid);
+      user = await db.users.getUserByT_userid(dbConnection, ctx.update.message.from.id);
       let wallet = await db.wallet_address.getWalletFromUser(dbConnection, user);
       await updateWalletAddressInstructionalMessage(ctx, wallet);
       return ctx.wizard.next();
@@ -143,7 +143,7 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI, user) {
         return;
       }
 
-      user = await db.users.getUserByT_userid(dbConnection, user.T_userid);
+      user = await db.users.getUserByT_userid(dbConnection, ctx.update.message.from.id);
       let wallet = await db.wallet_address.getWalletFromUser(dbConnection, user);
       await db.wallet_address.updateWalletAddress(dbConnection, wallet, walletAddress);
       walletUpdateMessage(ctx);

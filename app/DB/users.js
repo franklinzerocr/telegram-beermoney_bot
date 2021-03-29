@@ -57,7 +57,7 @@ async function getUserByT_userid(dbConnection, T_userid) {
     return result[0];
   } catch (e) {
     console.log(e);
-    console.log('getUserByUsername error');
+    console.log('getUserByT_userid error');
   }
 }
 

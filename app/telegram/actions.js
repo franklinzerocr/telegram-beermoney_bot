@@ -43,7 +43,7 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
   });
 
   bot.command('retirar', async (ctx) => {
-    user = await db.users.getUserByT_userid(dbConnection, user.T_userid);
+    user = await db.users.getUserByT_userid(dbConnection, ctx.update.message.from.id);
     user.Display == 'BTC' ? await menuMiddleware.replyToContext(ctx, '/BtcWithdrawal/') : await menuMiddleware.replyToContext(ctx, '/SatsWithdrawal/');
   });
 
