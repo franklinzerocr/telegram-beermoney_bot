@@ -28,14 +28,14 @@ async function dailyReport(bot, dbConnection, binanceAPI) {
         let BTCUSDT = (await binance.getTicker(binanceAPI)).BTCUSDT;
         for (let fund of funds) {
           let fundsBtc = util.satoshiToBTC(fund.Amount);
-          fundsFIAT.push((BTCUSDT * fundsBtc).toFixed(2));
+          fundsFIAT.push(util.numberWithCommas((BTCUSDT * fundsBtc).toFixed(2)));
           let fundsSatoshis = fund.Amount;
           fundsDisplay2.push(user.Display == 'BTC' ? fundsBtc : fundsSatoshis);
           fundsDisplay.push(user.Display == 'BTC' ? fundsBtc + ' BTC' : util.numberWithCommas(fundsSatoshis) + ' sats');
         }
         let ROI = ((fundsDisplay2[0] * 100) / fundsDisplay2[1] - 100).toFixed(2);
         let earnings = fundsDisplay2[0] - fundsDisplay2[1];
-        earnings += user.Display == 'BTC' ? ' BTC' : ' sats';
+        earnings = user.Display == 'BTC' ? earnings.toFixed(8) + ' BTC' : util.numberWithCommas(earnings) + ' sats';
         BTCUSDT = util.numberWithCommas(Math.floor(BTCUSDT));
         dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, BTCUSDT, earnings);
       }

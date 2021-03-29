@@ -14,11 +14,11 @@ function fundsMessage(ctx, user, fundsDisplay, fundsFIAT, maxCapDisplay) {
 
 function dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, BTCUSDT, earnings) {
   ROI = ROI >= 0 ? '+' + ROI : '-' + ROI;
-  bot.telegram.sendMessage(user.T_userid, 'Reporte diario 🍺😎\n\nHoy ganaste: ' + earnings + ' (' + ROI + '%)\nBalance Actual: ' + fundsDisplay[0] + ' ($' + fundsFIAT[0] + ')\n\nPrecio del Bitcoin: $' + BTCUSDT + ' 🤑');
+  bot.telegram.sendMessage(user.T_userid, 'Reporte diario 🍺😎\n\nHoy ganaste:\n' + earnings + ' (' + ROI + '%)\n\nBalance Actual:\n' + fundsDisplay[0] + ' ($' + fundsFIAT[0] + ')\n\nPrecio del Bitcoin: $' + BTCUSDT + ' 🤑');
 }
 
 function rebootInitialMessage(bot, user) {
-  bot.telegram.sendMessage(user.T_userid, '🔔 Beermoney BOT acaba de ser actualizado.\n\n Porfavor reinicia el BOT ingresando /start');
+  bot.telegram.sendMessage(user.T_userid, '🔔 Beermoney BOT acaba de ser actualizado.\n\n Porfavor reinicia el BOT con /start');
 }
 
 function unauthorizedMessage(ctx) {
