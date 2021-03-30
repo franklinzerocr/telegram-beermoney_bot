@@ -5,7 +5,7 @@ async function welcomeMessage(ctx, user) {
 }
 
 async function mainMenuMessage(ctx) {
-  ctx.reply('Beermoney BOT tienes las siguientes opciones:\n\n/wallet - Checa tu saldo actual en Beermoney\n/depositar - Ingresa un deposito a Beermoney\n/retirar - Retira tus fondos de Beermoney\n/config - Gestiona tu wallet de retiro\n/moneda - Cambia la unidad de cuenta (BTC o sats)\n/results - Obten link para el canal de telegram privado\n\nSupport: @franklinzerocr\n🍺😎');
+  ctx.reply('Beermoney BOT tiene las siguientes opciones:\n\n/wallet - Checa tu saldo actual en Beermoney\n/depositar - Ingresa un deposito a Beermoney\n/retirar - Retira tus fondos de Beermoney\n/config - Gestiona tu wallet de retiro\n/moneda - Cambia la unidad de cuenta (BTC o sats)\n/results - Obten link para el canal de telegram privado\n\nSupport: @franklinzerocr\n🍺😎');
 }
 
 async function fundsMessage(ctx, user, fundsDisplay, fundsFIAT, maxCapDisplay) {
@@ -39,7 +39,7 @@ async function chosenCurrencyMessage(ctx, currency) {
 }
 
 async function showDepositAddressInstructionalMessage(ctx, address) {
-  await ctx.replyWithMarkdown('*- Ingresa el* _TxId_ *del deposito que realizaste a esta direccion* 👇 o /backToMenu');
+  await ctx.replyWithMarkdown('*- Ingresa el* _txid_ *del deposito que realizaste a esta direccion* 👇 o /backToMenu');
   await ctx.reply(address);
 }
 

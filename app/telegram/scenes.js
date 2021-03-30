@@ -31,6 +31,7 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI) {
         await realTxidMessage(ctx);
         return;
       }
+      if (txId.includes('Internal transfer ')) txId = txId.split('Internal transfer ')[1];
       let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id, ctx);
       let lastFunds = await db.funds.getLastFundsFromUser(dbConnection, user);
       await db.operations.storeDepositOperation(dbConnection, lastFunds, txId);
