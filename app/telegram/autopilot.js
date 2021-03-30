@@ -7,34 +7,38 @@ const config = require('config');
 const { getNewlyCreatedFloors, updateTelegramFloor, getInitialFloor, getAlertOfFloor } = require('../DB/floors');
 
 async function waitForBeermoneyBot(dbConnection) {
-  while ((await db.trading_pool.checkDiffTradingPool(dbConnection)).length == 0) {
+  let tradingPool = await db.trading_pool.checkDiffTradingPool(dbConnection);
+  while (tradingPool.length == 0) {
     console.log('- Wait 1min for Beermoney System Update');
     await util.sleep(60000);
+    tradingPool = await db.trading_pool.checkDiffTradingPool(dbConnection);
   }
-  await util.sleep(60000);
+  await util.sleep(30000);
+  return tradingPool;
 }
 
 async function dailyReport(bot, dbConnection, binanceAPI) {
   schedule.scheduleJob({ hour: 00, minute: 00, second: 1 }, async function () {
-    await waitForBeermoneyBot(dbConnection);
+    let tradingPool = await waitForBeermoneyBot(dbConnection);
     let users = await db.users.getAllUsers(dbConnection);
     for (let user of users) {
       if (user.T_userid) {
         let funds = await db.funds.getPreviousTwoFundsFromUser(dbConnection, user);
         let fundsDisplay = [],
-          fundsDisplay2 = [];
+          fundsAmount = [];
         fundsFIAT = [];
         let BTCUSDT = (await binance.getTicker(binanceAPI)).BTCUSDT;
         for (let fund of funds) {
           let fundsBtc = util.satoshiToBTC(fund.Amount);
           fundsFIAT.push(util.numberWithCommas((BTCUSDT * fundsBtc).toFixed(2)));
           let fundsSatoshis = fund.Amount;
-          fundsDisplay2.push(user.Display == 'BTC' ? fundsBtc : fundsSatoshis);
+          fundsAmount.push(user.Display == 'BTC' ? fundsBtc : fundsSatoshis);
           fundsDisplay.push(user.Display == 'BTC' ? fundsBtc + ' BTC' : util.numberWithCommas(fundsSatoshis) + ' sats');
         }
-        let ROI = ((fundsDisplay2[0] * 100) / fundsDisplay2[1] - 100).toFixed(2);
-        let earnings = fundsDisplay2[0] - fundsDisplay2[1];
-        earnings = user.Display == 'BTC' ? earnings.toFixed(8) + ' BTC' : util.numberWithCommas(earnings) + ' sats';
+        let ROI = ((fundsAmount[0] * 100) / fundsAmount[1] - 100).toFixed(2);
+        let earnings = Number(await db.earning.getProfitEarningsFromFunds(dbConnection, funds));
+        if (user.Beermoney) earnings += Number(await db.earning.getBeermoneyEarningsFromTradingPool(dbConnection, tradingPool));
+        earnings = user.Display == 'BTC' ? util.satoshiToBTC(earnings) + ' BTC' : util.numberWithCommas(earnings) + ' sats';
         BTCUSDT = util.numberWithCommas(Math.floor(BTCUSDT));
         dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, BTCUSDT, earnings);
       }

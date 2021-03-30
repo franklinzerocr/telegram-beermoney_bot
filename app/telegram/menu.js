@@ -1,6 +1,7 @@
 const { MenuTemplate, deleteMenuFromContext } = require('telegraf-inline-menu');
-const { currencyMenuMessage, chosenCurrencyMessage, currencyWithdrawMessage } = require('./messages');
+const { currencyMenuMessage, chosenCurrencyMessage, currencyWithdrawMessage, mainMenuMessage } = require('./messages');
 const db = require('../DB/db');
+const util = require('../util');
 const { checkAuth } = require('./auth');
 
 const currencyDisplayMenu = async (dbConnection, menuTemplate) => {
@@ -14,6 +15,8 @@ const currencyDisplayMenu = async (dbConnection, menuTemplate) => {
       await db.users.updateUserCurrency(dbConnection, user.Username, 'BTC');
       await chosenCurrencyMessage(ctx, 'BTC');
       await deleteMenuFromContext(ctx);
+      await util.sleep(2000);
+      await mainMenuMessage(ctx);
       return false;
     },
   });
@@ -26,6 +29,8 @@ const currencyDisplayMenu = async (dbConnection, menuTemplate) => {
       await db.users.updateUserCurrency(dbConnection, user.Username, 'sats');
       await chosenCurrencyMessage(ctx, 'sats');
       await deleteMenuFromContext(ctx);
+      await util.sleep(2000);
+      await mainMenuMessage(ctx);
       return false;
     },
   });

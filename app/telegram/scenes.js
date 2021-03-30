@@ -8,7 +8,7 @@ const binance = require('../binance/api');
 async function leaveSceneTimeout(ctx) {
   setTimeout(async function tick() {
     return await ctx.scene.leave();
-  }, 300000);
+  }, 600000);
 }
 
 async function beermoneyScenes(bot, dbConnection, binanceAPI) {
@@ -35,6 +35,8 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI) {
       let lastFunds = await db.funds.getLastFundsFromUser(dbConnection, user);
       await db.operations.storeDepositOperation(dbConnection, lastFunds, txId);
       await depositStoredMessage(ctx);
+      await util.sleep(2000);
+      await mainMenuMessage(ctx);
       return await ctx.scene.leave();
     }
   );
@@ -68,6 +70,8 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI) {
       amount = util.btcToSatoshi(amount);
       await db.operations.storeWithdrawalOperation(dbConnection, lastFunds, amount);
       await withdrawalStoredMessage(ctx);
+      await util.sleep(2000);
+      await mainMenuMessage(ctx);
       return await ctx.scene.leave();
     }
   );
@@ -102,6 +106,8 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI) {
       let lastFunds = await db.funds.getLastFundsFromUser(dbConnection, user);
       await db.operations.storeWithdrawalOperation(dbConnection, lastFunds, amount);
       await withdrawalStoredMessage(ctx);
+      await util.sleep(2000);
+      await mainMenuMessage(ctx);
       return await ctx.scene.leave();
     }
   );
@@ -137,6 +143,8 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI) {
       amount = util.btcToSatoshi((amount / BTCUSDT).toFixed(8));
       await db.operations.storeWithdrawalOperation(dbConnection, lastFunds, amount);
       await withdrawalStoredMessage(ctx);
+      await util.sleep(2000);
+      await mainMenuMessage(ctx);
       return await ctx.scene.leave();
     }
   );
@@ -165,6 +173,8 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI) {
       let wallet = await db.wallet_address.getWalletFromUser(dbConnection, user);
       await db.wallet_address.updateWalletAddress(dbConnection, wallet, walletAddress);
       await walletUpdateMessage(ctx);
+      await util.sleep(2000);
+      await mainMenuMessage(ctx);
       return await ctx.scene.leave();
     }
   );

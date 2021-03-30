@@ -13,11 +13,14 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
     let funds = await db.funds.getLastFundsFromUser(dbConnection, user);
     let fundsSatoshis = util.numberWithCommas(funds.Amount);
     let fundsBtc = util.satoshiToBTC(funds.Amount);
-    let fundsFIAT = ((await binance.getTicker(binanceAPI)).BTCUSDT * fundsBtc).toFixed(2);
+    let fundsFIAT = util.numberWithCommas(((await binance.getTicker(binanceAPI)).BTCUSDT * fundsBtc).toFixed(2));
     let fundsDisplay = user.Display == 'BTC' ? fundsBtc + ' BTC' : fundsSatoshis + ' sats';
     let maxCapDisplay = user.Display == 'BTC' ? util.satoshiToBTC(user.Capacity) + ' BTC' : util.numberWithCommas(user.Capacity) + ' sats';
     await fundsMessage(ctx, user, fundsDisplay, fundsFIAT, maxCapDisplay);
+    await util.sleep(10000);
+    await mainMenuMessage(ctx);
   });
+
   await bot.command('/results', async (ctx, next) => {
     await resultsChannelMessage(ctx, bot);
   });
