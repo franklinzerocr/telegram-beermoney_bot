@@ -17,7 +17,7 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
     let fundsDisplay = user.Display == 'BTC' ? fundsBtc + ' BTC' : fundsSatoshis + ' sats';
     let maxCapDisplay = user.Display == 'BTC' ? util.satoshiToBTC(user.Capacity) + ' BTC' : util.numberWithCommas(user.Capacity) + ' sats';
     await fundsMessage(ctx, user, fundsDisplay, fundsFIAT, maxCapDisplay);
-    await util.sleep(10000);
+    await util.sleep(5000);
     await mainMenuMessage(ctx);
   });
 

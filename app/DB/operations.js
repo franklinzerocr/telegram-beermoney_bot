@@ -20,7 +20,19 @@ async function storeWithdrawalOperation(dbConnection, funds, amount) {
   }
 }
 
+async function getOperationsFromFunds(dbConnection, funds) {
+  try {
+    let result = await dbConnection.query('SELECT * FROM operations WHERE FK_Funds=' + funds.ID);
+    return result;
+  } catch (e) {
+    console.log(e);
+    console.log('getOperationsFromFunds Error');
+    return false;
+  }
+}
+
 module.exports = {
   storeDepositOperation,
   storeWithdrawalOperation,
+  getOperationsFromFunds,
 };

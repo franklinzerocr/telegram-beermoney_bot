@@ -4,7 +4,7 @@ async function getProfitEarningsFromFunds(dbConnection, funds) {
     return result[0].Profit;
   } catch (e) {
     console.log(e);
-    console.log('getEarningsFromFunds Error');
+    console.log('getProfitEarningsFromFunds Error');
     return false;
   }
 }
@@ -15,7 +15,7 @@ async function getBeermoneyEarningsFromTradingPool(dbConnection, tradingPool) {
     return result[0].Beermoney;
   } catch (e) {
     console.log(e);
-    console.log('getEarningsFromTradingPool Error');
+    console.log('getBeermoneyEarningsFromTradingPool Error');
     return false;
   }
 }
