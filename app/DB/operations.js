@@ -15,18 +15,28 @@ async function storeWithdrawalOperation(dbConnection, funds, amount) {
     return result.insertId;
   } catch (e) {
     console.log(e);
-    console.log('storeDepositOperation error');
+    console.log('storeWithdrawalOperation error');
     return false;
   }
 }
 
-async function getOperationsFromFunds(dbConnection, funds) {
+async function getConfirmedOperationsFromFunds(dbConnection, funds) {
   try {
-    let result = await dbConnection.query('SELECT * FROM operations WHERE FK_Funds=' + funds.ID);
+    let result = await dbConnection.query('SELECT * FROM operations WHERE Status="Done" FK_Funds=' + funds.ID);
     return result;
   } catch (e) {
     console.log(e);
-    console.log('getOperationsFromFunds Error');
+    console.log('getConfirmedOperationsFromFunds Error');
+    return false;
+  }
+}
+async function getUnconfirmedOperationsFromFunds(dbConnection, funds) {
+  try {
+    let result = await dbConnection.query('SELECT * FROM operations WHERE Status="Unconfirmed" FK_Funds=' + funds.ID);
+    return result;
+  } catch (e) {
+    console.log(e);
+    console.log('getUnconfirmedOperationsFromFunds Error');
     return false;
   }
 }
@@ -34,5 +44,6 @@ async function getOperationsFromFunds(dbConnection, funds) {
 module.exports = {
   storeDepositOperation,
   storeWithdrawalOperation,
-  getOperationsFromFunds,
+  getConfirmedOperationsFromFunds,
+  getUnconfirmedOperationsFromFunds,
 };

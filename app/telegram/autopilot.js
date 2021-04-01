@@ -9,12 +9,12 @@ const { getNewlyCreatedFloors, updateTelegramFloor, getInitialFloor, getAlertOfF
 async function waitForBeermoneyBot(dbConnection) {
   let tradingPool = await db.trading_pool.checkDiffTradingPool(dbConnection);
   while (tradingPool.length == 0) {
-    console.log('- Wait 1min for Beermoney System Update');
+    console.log('- Wait 1min or Beermoney System Update');
     await util.sleep(60000);
     tradingPool = await db.trading_pool.checkDiffTradingPool(dbConnection);
   }
-  await util.sleep(300000);
-  return tradingPool;
+  await util.sleep(30000);
+  return tradingPool[0];
 }
 
 function operationsTotalBalance(operations) {
@@ -27,7 +27,7 @@ function operationsTotalBalance(operations) {
 }
 
 async function dailyReport(bot, dbConnection, binanceAPI) {
-  schedule.scheduleJob({ hour: 00, minute: 00, second: 1 }, async function () {
+  schedule.scheduleJob({ hour: 00, minute: 01, second: 00 }, async function () {
     let tradingPool = await waitForBeermoneyBot(dbConnection);
     let users = await db.users.getAllUsers(dbConnection);
     for (let user of users) {
@@ -44,13 +44,14 @@ async function dailyReport(bot, dbConnection, binanceAPI) {
           fundsAmount.push(user.Display == 'BTC' ? fundsBtc : fundsSatoshis);
           fundsDisplay.push(user.Display == 'BTC' ? fundsBtc + ' BTC' : util.numberWithCommas(fundsSatoshis) + ' sats');
         }
-        let operationsBalance = operationsTotalBalance(await db.operations.getOperationsFromFunds(dbConnection, funds[1]));
+        let operationsBalance = operationsTotalBalance(await db.operations.getConfirmedOperationsFromFunds(dbConnection, funds[1]));
+        let unconfirmedOperations = await db.operations.getUnconfirmedOperationsFromFunds(dbConnection, funds[1]);
         let ROI = (((funds[0].Amount - operationsBalance) * 100) / funds[1].Amount - 100).toFixed(2);
         let earnings = Number(await db.earning.getProfitEarningsFromFunds(dbConnection, funds[1]));
-        if (user.Beermoney) earnings += Number(await db.earning.getBeermoneyEarningsFromTradingPool(dbConnection, tradingPool[0]));
+        if (user.Beermoney) earnings += Number(await db.earning.getBeermoneyEarningsFromTradingPool(dbConnection, tradingPool));
         earnings = user.Display == 'BTC' ? util.satoshiToBTC(earnings) + ' BTC' : util.numberWithCommas(earnings) + ' sats';
         BTCUSDT = util.numberWithCommas(Math.floor(BTCUSDT));
-        dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, BTCUSDT, earnings);
+        dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, BTCUSDT, earnings, unconfirmedOperations.length);
       }
     }
   });
