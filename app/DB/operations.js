@@ -22,7 +22,7 @@ async function storeWithdrawalOperation(dbConnection, funds, amount) {
 
 async function getConfirmedOperationsFromFunds(dbConnection, funds) {
   try {
-    let result = await dbConnection.query('SELECT * FROM operations WHERE Status="Done" FK_Funds=' + funds.ID);
+    let result = await dbConnection.query('SELECT * FROM operations WHERE Status="Done" AND FK_Funds=' + funds.ID);
     return result;
   } catch (e) {
     console.log(e);
@@ -32,7 +32,7 @@ async function getConfirmedOperationsFromFunds(dbConnection, funds) {
 }
 async function getUnconfirmedOperationsFromFunds(dbConnection, funds) {
   try {
-    let result = await dbConnection.query('SELECT * FROM operations WHERE Status="Unconfirmed" FK_Funds=' + funds.ID);
+    let result = await dbConnection.query('SELECT * FROM operations WHERE Status="Unconfirmed" AND FK_Funds=' + funds.ID);
     return result;
   } catch (e) {
     console.log(e);

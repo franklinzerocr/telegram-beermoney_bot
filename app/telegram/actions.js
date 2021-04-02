@@ -2,12 +2,12 @@ const db = require('../DB/db');
 const binance = require('../binance/api');
 const util = require('../util');
 const { checkAuth } = require('./auth');
-const { mainMenuMessage, fundsMessage, resultsChannelMessage } = require('./messages');
+const { mainMenuMessage, fundsMessage, resultsChannelMessage, helpMessage } = require('./messages');
 const { MenuMiddleware, MenuTemplate } = require('telegraf-inline-menu');
 const { currencyDisplayMenu, withdrawMenu } = require('./menu');
 
 async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
-  await bot.command('/wallet', async (ctx, next) => {
+  await bot.command('/saldo', async (ctx, next) => {
     await next();
     let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id);
     let funds = await db.funds.getLastFundsFromUser(dbConnection, user);
@@ -23,6 +23,12 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
 
   await bot.command('/results', async (ctx, next) => {
     await resultsChannelMessage(ctx, bot);
+  });
+
+  await bot.command('/help', async (ctx, next) => {
+    let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id);
+
+    await helpMessage(ctx, user);
   });
 
   await bot.command('/depositar', async (ctx) => {

@@ -13,6 +13,7 @@ async function waitForBeermoneyBot(dbConnection) {
     await util.sleep(60000);
     tradingPool = await db.trading_pool.checkDiffTradingPool(dbConnection);
   }
+  await util.sleep(300000);
   return tradingPool[0];
 }
 
@@ -26,7 +27,7 @@ function operationsTotalBalance(operations) {
 }
 
 async function dailyReport(bot, dbConnection, binanceAPI) {
-  schedule.scheduleJob({ hour: 00, minute: 05, second: 00 }, async function () {
+  schedule.scheduleJob({ hour: 00, minute: 00, second: 01 }, async function () {
     let tradingPool = await waitForBeermoneyBot(dbConnection);
     let users = await db.users.getAllUsers(dbConnection);
     for (let user of users) {
