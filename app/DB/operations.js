@@ -41,9 +41,21 @@ async function getUnconfirmedOperationsFromFunds(dbConnection, funds) {
   }
 }
 
+async function checkExistingDeposit(dbConnection, txId) {
+  try {
+    let result = await dbConnection.query('SELECT * FROM operations WHERE txId="' + txId + '"');
+    return result;
+  } catch (e) {
+    console.log(e);
+    console.log('checkExistingDeposit Error');
+    return false;
+  }
+}
+
 module.exports = {
   storeDepositOperation,
   storeWithdrawalOperation,
   getConfirmedOperationsFromFunds,
   getUnconfirmedOperationsFromFunds,
+  checkExistingDeposit,
 };

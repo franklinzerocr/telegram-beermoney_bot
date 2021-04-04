@@ -1,7 +1,7 @@
 const { session, Scenes } = require('telegraf');
 const { checkAuth } = require('./auth');
 const db = require('../DB/db');
-const { realWalletMessage, walletUpdateMessage, updateWalletAddressInstructionalMessage, showDepositAddressInstructionalMessage, realTxidMessage, depositStoredMessage, realAmountMessage, btcWithdrawalInstructionsMessage, satsWithdrawalInstructionsMessage, withdrawalStoredMessage, fiatWithdrawalInstructionsMessage, mainMenuMessage } = require('./messages');
+const { notUniqueTxidMessage, realWalletMessage, walletUpdateMessage, updateWalletAddressInstructionalMessage, showDepositAddressInstructionalMessage, realTxidMessage, depositStoredMessage, realAmountMessage, btcWithdrawalInstructionsMessage, satsWithdrawalInstructionsMessage, withdrawalStoredMessage, fiatWithdrawalInstructionsMessage, mainMenuMessage } = require('./messages');
 const util = require('../util');
 const binance = require('../binance/api');
 
@@ -16,8 +16,7 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI) {
     'DEPOSIT_ID', // first argument is Scene_ID, same as for BaseScene
     async (ctx) => {
       let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id, ctx);
-      let walletAddress = await binanceAPI.depositAddress('BTC');
-      await showDepositAddressInstructionalMessage(ctx, walletAddress.address, user.Capacity);
+      await showDepositAddressInstructionalMessage(ctx);
       leaveSceneTimeout(ctx);
       return ctx.wizard.next();
     },
@@ -27,11 +26,15 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI) {
         return await ctx.scene.leave();
       }
       let txId = String(ctx.message.text);
-      if (txId.length < 10) {
+      if (txId.length < 9) {
         await realTxidMessage(ctx);
         return;
       }
       if (txId.includes('Internal transfer ')) txId = txId.split('Internal transfer ')[1];
+      if ((await db.operations.checkExistingDeposit(dbConnection, txId)).length > 0) {
+        await notUniqueTxidMessage(ctx);
+        return;
+      }
       let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id, ctx);
       let lastFunds = await db.funds.getLastFundsFromUser(dbConnection, user);
       await db.operations.storeDepositOperation(dbConnection, lastFunds, txId);

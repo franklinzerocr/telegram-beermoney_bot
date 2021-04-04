@@ -9,7 +9,7 @@ const { getNewlyCreatedFloors, updateTelegramFloor, getInitialFloor, getAlertOfF
 async function waitForBeermoneyBot(dbConnection) {
   let tradingPool = await db.trading_pool.checkDiffTradingPool(dbConnection);
   while (tradingPool.length == 0) {
-    console.log('- Wait 1min or Beermoney System Update');
+    console.log('- Wait 1min for Beermoney System Update');
     await util.sleep(60000);
     tradingPool = await db.trading_pool.checkDiffTradingPool(dbConnection);
   }
@@ -27,7 +27,7 @@ function operationsTotalBalance(operations) {
 }
 
 async function dailyReport(bot, dbConnection, binanceAPI) {
-  schedule.scheduleJob({ hour: 00, minute: 00, second: 01 }, async function () {
+  schedule.scheduleJob({ hour: 00, minute: 00, second: 10 }, async function () {
     let tradingPool = await waitForBeermoneyBot(dbConnection);
     let users = await db.users.getAllUsers(dbConnection);
     for (let user of users) {
