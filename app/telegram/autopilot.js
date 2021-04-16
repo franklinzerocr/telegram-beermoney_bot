@@ -4,7 +4,7 @@ const binance = require('../binance/api');
 const util = require('../util');
 const { dailyReportMessage, rebootInitialMessage } = require('./messages');
 const config = require('config');
-const { getNewlyCreatedFloors, updateTelegramFloor, getInitialFloor, getAlertOfFloor } = require('../DB/floors');
+const { getNewlyCreatedFloors, updateTelegramFloor, getInitialFloor, getNewlyCreatedFloorsSignals, updateTelegramFloorSignals } = require('../DB/floors');
 
 async function waitForBeermoneyBot(dbConnection) {
   let tradingPool = await db.trading_pool.checkDiffTradingPool(dbConnection);
@@ -59,7 +59,7 @@ async function dailyReport(bot, dbConnection, binanceAPI) {
 }
 
 async function alertReport(bot, dbConnection) {
-  console.log('Start Telegram Channel BOT!');
+  console.log('Start Telegram Results Channel BOT!');
   let timerId = setTimeout(async function tick() {
     let floor = [];
     let message = '';
@@ -81,6 +81,7 @@ async function alertReport(bot, dbConnection) {
         message += 'Entry Buy Price: ' + floor.Price + ' sats \n';
         // message += 'Channel: ' + alert.Channel;
         status = await bot.telegram.sendMessage(config.channel, message);
+
         //EXIT
       } else {
         let initialFloor = await getInitialFloor(dbConnection, floor.FK_Trading_Plan);
@@ -102,8 +103,42 @@ async function alertReport(bot, dbConnection) {
 
         status = await bot.telegram.sendMessage(config.channel, message, { reply_to_message_id: initialFloor.TelegramID });
       }
+      await updateTelegramFloor(dbConnection, floor, status.message_id);
+    }
+    timerId = setTimeout(tick, 1000);
+  }, 0);
+}
 
-      updateTelegramFloor(dbConnection, floor, status.message_id);
+async function beermoneySignals(bot, dbConnection, binanceAPI) {
+  console.log('Start Beermoney Signals Channel!');
+  let timerId = setTimeout(async function tick() {
+    let floor = [];
+    let message = '';
+    let status = {};
+
+    floor = await getNewlyCreatedFloorsSignals(dbConnection);
+    if (floor.length) {
+      floor = floor[0];
+
+      message = '';
+      status = {};
+
+      // let alert = await getAlertOfFloor(dbConnection, floor);
+
+      // ENTRY
+      if (floor.Level == 0) {
+        message += '#TradingPlan' + floor.FK_Trading_Plan + ' START 🏁\n\n';
+        message += floor.Asset + ' / #BTC\n';
+        message += 'Entry Buy Price: ' + floor.Price + ' sats \n\n';
+        // message += 'Channel: ' + alert.Channel;
+        status = await bot.telegram.sendMessage(config.beermoneySignals, message);
+        await updateTelegramFloorSignals(dbConnection, floor, status.message_id);
+
+        //EXIT
+      } else {
+        let initialFloor = await getInitialFloor(dbConnection, floor.FK_Trading_Plan);
+        await binance.postTopPrice(bot, dbConnection, binanceAPI, floor, initialFloor);
+      }
     }
     timerId = setTimeout(tick, 1000);
   }, 0);
@@ -122,4 +157,5 @@ module.exports = {
   dailyReport,
   alertReport,
   initialMessage,
+  beermoneySignals,
 };

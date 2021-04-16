@@ -8,21 +8,21 @@ async function mainMenuMessage(ctx) {
   ctx.reply('Beermoney BOT tiene las siguientes opciones:\n\n/saldo - Checa tu saldo actual en Beermoney\n/depositar - Ingresa un deposito a Beermoney\n/retirar - Retira tus fondos de Beermoney\n/config - Gestiona tu wallet de retiro\n/moneda - Cambia la unidad de cuenta (BTC o sats)\n/results - Obten link para el canal de telegram privado\n/help - Guia de Beermoney BOT para dummies\n\nSupport: @franklinzerocr\n🍺😎');
 }
 
-async function fundsMessage(ctx, user, fundsDisplay, fundsFIAT, maxCapDisplay) {
-  ctx.replyWithMarkdown(user.Username + '\n\nSaldo: *' + fundsDisplay + '* ($' + fundsFIAT + ')\nMax Cap: ' + maxCapDisplay);
+async function fundsMessage(ctx, user, fundsDisplay, fundsFIAT, maxCapDisplay, BTCUSDT) {
+  ctx.replyWithMarkdown(user.Username + '\n\nSaldo: *' + fundsDisplay + '* ($' + fundsFIAT + ')\nMax Cap: ' + maxCapDisplay + '\n\nPrecio del Bitcoin: $' + BTCUSDT + ' 🤑');
 }
 
 async function dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, BTCUSDT, earnings, unconfirmedOperations = 0, operationsBalance = 0, operationsBalanceDisplay) {
   ROI = ROI >= 0 ? '+' + ROI : ROI;
   if (ROI > 0) bot.telegram.sendMessage(user.T_userid, 'Reporte diario 🍺😎\n\nHoy ganaste:\n' + earnings + ' (' + ROI + '%)\n\nBalance Actual:\n' + fundsDisplay[0] + ' ($' + fundsFIAT[0] + ')\n\nPrecio del Bitcoin: $' + BTCUSDT + ' 🤑\n\n¡To the moon!🚀');
-  else if (ROI < 0) bot.telegram.sendMessage(user.T_userid, 'Reporte diario 😢💸\n\nHoy perdiste:\n' + earnings + ' (' + ROI + '%)\n\nBalance Actual:\n' + fundsDisplay[0] + ' ($' + fundsFIAT[0] + ')\n\nPrecio del Bitcoin: $' + BTCUSDT + ' 🤑\n\nNo te preocupes que ya estamos corrigiendo💪');
+  else if (ROI <= 0) bot.telegram.sendMessage(user.T_userid, 'Reporte diario 😢💸\n\nHoy perdiste:\n' + earnings + ' (' + ROI + '%)\n\nBalance Actual:\n' + fundsDisplay[0] + ' ($' + fundsFIAT[0] + ')\n\nPrecio del Bitcoin: $' + BTCUSDT + ' 🤑\n\nNo te preocupes que ya estamos corrigiendo💪');
   if (operationsBalance < 0) bot.telegram.sendMessage(user.T_userid, 'Hoy retiraste ' + operationsBalanceDisplay);
   else if (operationsBalance > 0) bot.telegram.sendMessage(user.T_userid, 'Hoy depositaste ' + operationsBalanceDisplay);
   if (unconfirmedOperations) bot.telegram.sendMessage(user.T_userid, 'Ocurrió un error con tus operaciones de deposito/retiro del día 😓\nPorfavor contacta a @franklinzerocr ');
 }
 
 async function rebootInitialMessage(bot, user) {
-  bot.telegram.sendMessage(user.T_userid, '🔔 Hola ' + user.Username + '👋\n Acabo de hacerle varias actualizaciones a Beermoney BOT:\n\n1)Guia de /help mas actualizada\n2)Reporte Diario incluye tus depositos o retiros realizados\n3)Arreglado problema con mensajes de canal de resultados\n4)Recuerda que casi todos los dias estoy corrigiendo y mejorando el algoritmo de trading. Cada vez que hay un resultado negativo estoy involucrado al 100% tratando de evaluar posibles causas y soluciones para que no siga sucediendo 😃\n\nAhora porfavor reinicia tu Beermoney BOT con /start 🏁');
+  bot.telegram.sendMessage(user.T_userid, '🔔 Hola ' + user.Username + '👋\n Nuevamente le hice varias actualizaciones a Beermoney BOT:\n\n1) Fix de bugs menores\n2) Se muestra el precio del Bitcoin en /saldo\n3) Como siempre, recuerda que este Bot de trading esta en continuo desarrollo, prueba y error. De igual forma, si ves algun bug en este pequeño Bot de administración, notificamelo 😃\n\nAhora porfavor reinicia tu Beermoney BOT marcando /start 🏁');
 }
 
 async function unauthorizedMessage(ctx) {

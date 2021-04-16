@@ -13,6 +13,21 @@ async function getNewlyCreatedFloors(dbConnection) {
   }
 }
 
+async function getNewlyCreatedFloorsSignals(dbConnection) {
+  try {
+    // Delay conditions
+    let timeConditionEntry = '(UNIX_TIMESTAMP(CURRENT_TIME())-UNIX_TIMESTAMP(f.DateTime))/60 <1 AND (UNIX_TIMESTAMP(CURRENT_TIME())-UNIX_TIMESTAMP(f.DateTime))/60 >=0';
+    let timeConditionEnd = '(UNIX_TIMESTAMP(CURRENT_TIME())-UNIX_TIMESTAMP(f.DateTime))/60 <(f.RandomMinutes+1) AND (UNIX_TIMESTAMP(CURRENT_TIME())-UNIX_TIMESTAMP(f.DateTime))/60 >=f.RandomMinutes';
+
+    let result = await dbConnection.query('SELECT * FROM floor f WHERE DateTime IS NOT NULL AND ((Level=0 AND ' + timeConditionEntry + ') OR (Level=-2 AND ' + timeConditionEnd + ' )) AND SignalsID is Null AND OrderID<>0 ');
+    return result;
+  } catch (e) {
+    console.log(e);
+    console.log('getNewlyCreatedFloor Error');
+    return false;
+  }
+}
+
 async function getInitialFloor(dbConnection, tradingPlanID) {
   try {
     let result = await dbConnection.query('SELECT * FROM floor f WHERE Level=0 AND FK_Trading_Plan=' + tradingPlanID);
@@ -48,9 +63,23 @@ async function updateTelegramFloor(dbConnection, floor, telegramID) {
   }
 }
 
+async function updateTelegramFloorSignals(dbConnection, floor, telegramID) {
+  try {
+    let result = await dbConnection.query('UPDATE floor SET SignalsID=' + telegramID + '  WHERE ID=' + floor.ID);
+
+    return result;
+  } catch (e) {
+    console.log(e);
+    console.log('updateTelegramFloorSignals Error');
+    return false;
+  }
+}
+
 module.exports = {
   getInitialFloor,
   getNewlyCreatedFloors,
   updateTelegramFloor,
   getAlertOfFloor,
+  getNewlyCreatedFloorsSignals,
+  updateTelegramFloorSignals,
 };

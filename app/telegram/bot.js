@@ -3,7 +3,7 @@ const { beermoneyCommands } = require('./actions');
 const { checkAuth } = require('./auth');
 const { beermoneyScenes } = require('./scenes');
 const { mainMenuMessage, welcomeMessage, unauthorizedMessage } = require('./messages');
-const { dailyReport, alertReport, initialMessage } = require('./autopilot');
+const { dailyReport, alertReport, initialMessage, beermoneySignals } = require('./autopilot');
 const config = require('config');
 // should be on .env file
 const bot = new Telegraf(config.telegram.key);
@@ -33,6 +33,7 @@ async function go(DBsystem, DBbeermoney, binanceAPI) {
   await initialMessage(bot, DBsystem);
   await dailyReport(bot, DBsystem, binanceAPI);
   await alertReport(bot, DBbeermoney);
+  await beermoneySignals(bot, DBbeermoney, binanceAPI);
 
   // Enable graceful stop
   process.once('SIGINT', () => bot.stop('SIGINT'));

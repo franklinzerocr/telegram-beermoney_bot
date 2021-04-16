@@ -16,7 +16,9 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
     let fundsFIAT = util.numberWithCommas(((await binance.getTicker(binanceAPI)).BTCUSDT * fundsBtc).toFixed(2));
     let fundsDisplay = user.Display == 'BTC' ? fundsBtc + ' BTC' : fundsSatoshis + ' sats';
     let maxCapDisplay = user.Display == 'BTC' ? util.satoshiToBTC(user.Capacity) + ' BTC' : util.numberWithCommas(user.Capacity) + ' sats';
-    await fundsMessage(ctx, user, fundsDisplay, fundsFIAT, maxCapDisplay);
+    let BTCUSDT = (await binance.getTicker(binanceAPI)).BTCUSDT;
+    BTCUSDT = util.numberWithCommas(Math.floor(BTCUSDT));
+    await fundsMessage(ctx, user, fundsDisplay, fundsFIAT, maxCapDisplay, BTCUSDT);
   });
 
   await bot.command('/results', async (ctx, next) => {
