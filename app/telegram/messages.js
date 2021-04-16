@@ -15,7 +15,7 @@ async function fundsMessage(ctx, user, fundsDisplay, fundsFIAT, maxCapDisplay, B
 async function dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, BTCUSDT, earnings, unconfirmedOperations = 0, operationsBalance = 0, operationsBalanceDisplay) {
   ROI = ROI >= 0 ? '+' + ROI : ROI;
   if (ROI > 0) bot.telegram.sendMessage(user.T_userid, 'Reporte diario 🍺😎\n\nHoy ganaste:\n' + earnings + ' (' + ROI + '%)\n\nBalance Actual:\n' + fundsDisplay[0] + ' ($' + fundsFIAT[0] + ')\n\nPrecio del Bitcoin: $' + BTCUSDT + ' 🤑\n\n¡To the moon!🚀');
-  else if (ROI <= 0) bot.telegram.sendMessage(user.T_userid, 'Reporte diario 😢💸\n\nHoy perdiste:\n' + earnings + ' (' + ROI + '%)\n\nBalance Actual:\n' + fundsDisplay[0] + ' ($' + fundsFIAT[0] + ')\n\nPrecio del Bitcoin: $' + BTCUSDT + ' 🤑\n\nNo te preocupes que ya estamos corrigiendo💪');
+  else if (ROI < 0) bot.telegram.sendMessage(user.T_userid, 'Reporte diario 😢💸\n\nHoy perdiste:\n' + earnings + ' (' + ROI + '%)\n\nBalance Actual:\n' + fundsDisplay[0] + ' ($' + fundsFIAT[0] + ')\n\nPrecio del Bitcoin: $' + BTCUSDT + ' 🤑\n\nNo te preocupes que ya estamos corrigiendo💪');
   if (operationsBalance < 0) bot.telegram.sendMessage(user.T_userid, 'Hoy retiraste ' + operationsBalanceDisplay);
   else if (operationsBalance > 0) bot.telegram.sendMessage(user.T_userid, 'Hoy depositaste ' + operationsBalanceDisplay);
   if (unconfirmedOperations) bot.telegram.sendMessage(user.T_userid, 'Ocurrió un error con tus operaciones de deposito/retiro del día 😓\nPorfavor contacta a @franklinzerocr ');
