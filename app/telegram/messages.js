@@ -22,7 +22,7 @@ async function dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, BTCUS
 }
 
 async function rebootInitialMessage(bot, user) {
-  bot.telegram.sendMessage(user.T_userid, '🔔 Hey ' + user.Username + '🖖\n Hice una pequeña actualizacion de Beermoney BOT donde estoy tratando de identificar porque imprime resultados de profit tan irreales (-46% por ejemplo). Aun no doy con el detalle, pero es un tema de desincronizacion de guardado de datos donde muestra solo parte de la operacion, la operacion real si fue exitosa. Actualmente Beermoney no puede perder mas de -6% en una operacion y eso es en casos muy extremos 😅\n\nAhora porfavor reinicia tu Beermoney BOT marcando /start 🏁');
+  bot.telegram.sendMessage(user.T_userid, '🔔 Buenas noches ' + user.Username + ' 👋\n Nuevamente acabo de hacer otro fix en este pequeño bot de telegram.\n\nAhora porfavor reinicia tu Beermoney BOT marcando /start 🏁');
 }
 
 async function unauthorizedMessage(ctx) {

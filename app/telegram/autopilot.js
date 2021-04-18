@@ -27,7 +27,7 @@ function operationsTotalBalance(operations) {
 }
 
 async function dailyReport(bot, dbConnection, binanceAPI) {
-  schedule.scheduleJob({ hour: 00, minute: 00, second: 10 }, async function () {
+  schedule.scheduleJob({ hour: 00, minute: 00, second: 0 }, async function () {
     let tradingPool = await waitForBeermoneyBot(dbConnection);
     let users = await db.users.getAllUsers(dbConnection);
     for (let user of users) {
@@ -77,7 +77,7 @@ async function alertReport(bot, dbConnection) {
       // ENTRY
       if (floor.Level == 0) {
         message += '#TradingPlan' + floor.FK_Trading_Plan + ' START!!!\n\n';
-        message += floor.Asset + ' / #BTC\n';
+        message += '#' + floor.Asset + ' / #BTC\n';
         message += 'Entry Buy Price: ' + floor.Price + ' sats \n';
         // message += 'Channel: ' + alert.Channel;
         status = await bot.telegram.sendMessage(config.channel, message);
@@ -128,7 +128,7 @@ async function beermoneySignals(bot, dbConnection, binanceAPI) {
       // ENTRY
       if (floor.Level == 0) {
         message += '#TradingPlan' + floor.FK_Trading_Plan + ' START 🏁\n\n';
-        message += floor.Asset + ' / #BTC\n';
+        message += '#' + floor.Asset + ' / #BTC\n';
         message += 'Entry Buy Price: ' + floor.Price + ' sats \n\n';
         // message += 'Channel: ' + alert.Channel;
         status = await bot.telegram.sendMessage(config.beermoneySignals, message);
