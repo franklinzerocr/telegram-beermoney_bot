@@ -22,7 +22,8 @@ async function dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, BTCUS
 }
 
 async function rebootInitialMessage(bot, user) {
-  bot.telegram.sendMessage(user.T_userid, '🔔 Buenas noches ' + user.Username + ' 👋\n Nuevamente acabo de hacer otro fix en este pequeño bot de telegram.\n\nAhora porfavor reinicia tu Beermoney BOT marcando /start 🏁');
+  let maxCap = user.Username == 'Raymondn' || user.Username == 'ftpaty' || user.Username == 'karlianamsuarez' || user.Username == 'hortydesign' || user.Username == 'ruiseart91' || user.Username == 'mikeportela' ? '500,000' : '150,000';
+  bot.telegram.sendMessage(user.T_userid, '🔔 Hola ' + user.Username + '👋, te tengo noticias de suma importancia que debes leer con atencion:\n\nDesde el día de hoy, 20 de abril, hasta el 30 de abril tendras una capacidad maxima de 1,000,000 de sats dentro del fondo de Beermoney BOT. Luego a partir del 1 de mayo se establecera a ' + maxCap + ' sats.\n\nLa razón de esto es que hice unas proyecciones y la maxima capacidad del Bot esta acercandose, por ende debo limitar las cuentas a montos pequeños dentro de poco. Esto sucede porque en la version actual de Beermoney (v1.2) estamos operando en mercado spot de bajo volumen (shitcoins) y corremos el riesgo de quedarnos con capital sin vender mientras mas alto sea el volumen.\n\nHabiendo dicho esto, mi recomendación es que aproveches al maximo la capacidad por tiempo limitado y deposites lo que puedas dentro del bot para obtener mas ganancias. Aviso que despues del 1 de mayo no volveré a incrementar la capacidad de las cuentas hasta que en un futuro termine de desarrollar Beermoney v2.0 y la nueva estrategia que solucione el manejo de un mayor volumen.\n\nTe recuerdo que todo excedente a tu capacidad maxima se retirara a tu wallet configurada de forma automatica en cada corte diario.\n\n🧐 TLDR: Ahora puedes depositar hasta 1,000,000 de sats dentro del bot, pero solo hasta el 30 de abril. Luego solo podras tener ' + maxCap + ' sats dentro del bot. Cualquier duda contactame a @franklinzerocr\n\n Ahora porfavor reinicia tu Beermoney BOT marcando /start 🏁');
 }
 
 async function unauthorizedMessage(ctx) {
@@ -99,7 +100,7 @@ async function notUniqueTxidMessage(ctx) {
 }
 
 async function updateWalletAddressInstructionalMessage(ctx, wallet) {
-  await ctx.replyWithMarkdown('Tu wallet actual es:\n' + wallet.Wallet + '\n\n*- Ingresa la nueva* _Wallet Address_ *a utilizar en Beermoney o /backToMenu* 👛');
+  await ctx.replyWithMarkdown('Tu wallet actual es:\n' + wallet.Wallet + '\n\n*- Ingresa la nueva* _Wallet Address_ * de BTC a utilizar en Beermoney o /backToMenu* 👛');
 }
 
 async function helpMessage(ctx, user) {
