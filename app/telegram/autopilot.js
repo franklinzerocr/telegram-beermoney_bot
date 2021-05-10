@@ -51,7 +51,7 @@ async function dailyReport(bot, dbConnection, binanceAPI) {
         if (user.Beermoney) earnings += Number(await db.earning.getBeermoneyEarningsFromTradingPool(dbConnection, tradingPool));
         earnings = user.Display == 'BTC' ? util.satoshiToBTC(earnings) + ' BTC' : util.numberWithCommas(earnings) + ' sats';
         BTCUSDT = util.numberWithCommas(Math.floor(BTCUSDT));
-        dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, BTCUSDT, earnings, unconfirmedOperations.length, operationsBalance, operationsBalanceDisplay);
+        dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, BTCUSDT, earnings, unconfirmedOperations.length, operationsBalance, operationsBalanceDisplay, funds[0].Amount);
       }
     }
   });
