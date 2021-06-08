@@ -26,11 +26,11 @@ async function postTopPrice(bot, dbConnection, binanceAPI, floor, initialFloor) 
         highestPrice = highestPrice < high ? high : highestPrice;
       }
 
-      highestPrice = (highestPrice * 100000000).toFixed(0);
+      highestPrice = floor.Pair == 'BTC' ? (highestPrice * 100000000).toFixed(0) : highestPrice;
 
       let profit = ((highestPrice * 100) / initialFloor.Price - 100).toFixed(2);
 
-      let message = '#' + floor.Asset + ' / #BTC\n';
+      let message = '#' + floor.Asset + ' / #' + floor.Pair + '\n';
       message += 'Top Price: ' + highestPrice + '\n';
       message += 'Profit so far: ' + profit + '% 😎🍺\n\n';
       message += '#AlgoTrade';

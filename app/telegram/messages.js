@@ -12,13 +12,17 @@ async function fundsMessage(ctx, user, fundsDisplay, fundsFIAT, maxCapDisplay, B
   ctx.replyWithMarkdown(user.Username + '\n\nSaldo: *' + fundsDisplay + '* ($' + fundsFIAT + ')\nMax Cap: ' + maxCapDisplay + '\n\nPrecio del Bitcoin: $' + BTCUSDT + ' 🤑');
 }
 
-async function dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, BTCUSDT, earnings, unconfirmedOperations = 0, operationsBalance = 0, operationsBalanceDisplay, actualAmount) {
+async function dailyReportIntroMessage(bot, user) {
+  bot.telegram.sendMessage(user.T_userid, 'Reporte diario Beermoney Bot 🤑');
+}
+
+async function dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, BTCUSDT, earnings, unconfirmedOperations = 0, operationsBalance = 0, operationsBalanceDisplay, actualAmount, asset) {
   ROI = ROI >= 0 ? '+' + ROI : ROI;
-  if (actualAmount > 0)
-    if (ROI >= 0) bot.telegram.sendMessage(user.T_userid, 'Reporte diario 🍺😎\n\nHoy ganaste:\n' + earnings + ' (' + ROI + '%)\n\nBalance Actual:\n' + fundsDisplay[0] + ' ($' + fundsFIAT[0] + ')\n\nPrecio del Bitcoin: $' + BTCUSDT + ' 🤑\n\n¡To the moon!🚀');
-    else if (ROI < 0) bot.telegram.sendMessage(user.T_userid, 'Reporte diario 😢💸\n\nHoy perdiste:\n' + earnings + ' (' + ROI + '%)\n\nBalance Actual:\n' + fundsDisplay[0] + ' ($' + fundsFIAT[0] + ')\n\nPrecio del Bitcoin: $' + BTCUSDT + ' 🤑\n\nNo te preocupes que ya estamos corrigiendo💪');
-  if (operationsBalance < 0) bot.telegram.sendMessage(user.T_userid, 'Hoy retiraste ' + operationsBalanceDisplay);
-  else if (operationsBalance > 0) bot.telegram.sendMessage(user.T_userid, 'Hoy depositaste ' + operationsBalanceDisplay);
+  if (actualAmount)
+    if (ROI >= 0) bot.telegram.sendMessage(user.T_userid, 'Ganaste ' + asset + ' 😎🍺\n' + earnings + ' (' + ROI + '%)\n\nBalance Actual:\n' + fundsDisplay[0] + ' ($' + fundsFIAT[0] + ')\n\n¡To the moon!🚀');
+    else if (ROI < 0) bot.telegram.sendMessage(user.T_userid, 'Perdiste ' + asset + ' 😢💸\n' + earnings + ' (' + ROI + '%)\n\nBalance Actual:\n' + fundsDisplay[0] + ' ($' + fundsFIAT[0] + ')\n\nNo te preocupes que ya estamos corrigiendo💪');
+  if (operationsBalance < 0) bot.telegram.sendMessage(user.T_userid, 'Se retiraron ' + operationsBalanceDisplay + ' a tu wallet configurada');
+  else if (operationsBalance > 0) bot.telegram.sendMessage(user.T_userid, 'Se acreditaron ' + operationsBalanceDisplay + ' de tu deposito realizado');
   if (unconfirmedOperations) bot.telegram.sendMessage(user.T_userid, 'Ocurrió un error con tus operaciones de deposito/retiro del día 😓\nPorfavor contacta a @franklinzerocr ');
 }
 
@@ -132,4 +136,5 @@ module.exports = {
   realWalletMessage,
   helpMessage,
   notUniqueTxidMessage,
+  dailyReportIntroMessage,
 };

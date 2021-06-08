@@ -9,9 +9,9 @@ async function getLastFundsFromUser(dbConnection, user) {
   }
 }
 
-async function getPreviousTwoFundsFromUser(dbConnection, user) {
+async function getPreviousTwoFundsFromUser(dbConnection, user, asset) {
   try {
-    let result = await dbConnection.query('SELECT * FROM funds WHERE FK_User=' + user.ID + ' ORDER BY ID DESC LIMIT 2');
+    let result = await dbConnection.query('SELECT * FROM funds WHERE FK_User=' + user.ID + ' AND Asset="' + asset + '" ORDER BY ID DESC LIMIT 2');
     return result;
   } catch (e) {
     console.log(e);
