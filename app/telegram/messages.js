@@ -8,8 +8,12 @@ async function mainMenuMessage(ctx) {
   ctx.reply('Beermoney BOT tiene las siguientes opciones:\n\n/saldo - Checa tu saldo actual en Beermoney\n/depositar - Ingresa un deposito a Beermoney\n/retirar - Retira tus fondos de Beermoney\n/config - Gestiona tu wallet de retiro\n/moneda - Cambia la unidad de cuenta (BTC o sats)\n/results - Obten link para el canal de telegram privado\n/help - Guia de Beermoney BOT para dummies\n\nSupport: @franklinzerocr\n🍺😎');
 }
 
-async function fundsMessage(ctx, user, fundsDisplay, fundsFIAT, maxCapDisplay, BTCUSDT) {
-  ctx.replyWithMarkdown(user.Username + '\n\nSaldo: *' + fundsDisplay + '* ($' + fundsFIAT + ')\nMax Cap: ' + maxCapDisplay + '\n\nPrecio del Bitcoin: $' + BTCUSDT + ' 🤑');
+async function fundsIntroMessage(ctx, user) {
+  ctx.replyWithMarkdown('Saldos Actuales de ' + user.Username + ':');
+}
+
+async function fundsMessage(ctx, fundsDisplay, fundsFIAT, maxCapDisplay, ticker, asset) {
+  ctx.replyWithMarkdown(asset + ':\n\n*' + fundsDisplay + '* ($' + fundsFIAT + ')\nMax Cap: ' + maxCapDisplay + '\n\nPrecio del ' + asset + ': $' + ticker + ' 🤑');
 }
 
 async function dailyReportIntroMessage(bot, user) {
@@ -137,4 +141,5 @@ module.exports = {
   helpMessage,
   notUniqueTxidMessage,
   dailyReportIntroMessage,
+  fundsIntroMessage,
 };

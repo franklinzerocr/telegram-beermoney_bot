@@ -8,12 +8,12 @@ const { getNewlyCreatedFloors, updateTelegramFloor, getInitialFloor, getNewlyCre
 
 async function waitForBeermoneyBot(dbConnection) {
   let tradingPool = await db.trading_pool.checkDiffTradingPool(dbConnection);
-  while (tradingPool.length == 4) {
+  while (tradingPool.length < 4) {
     console.log('- Wait 1min for Beermoney System Update');
     await util.sleep(60000);
     tradingPool = await db.trading_pool.checkDiffTradingPool(dbConnection);
   }
-  return tradingPool[0];
+  return true;
 }
 
 function operationsTotalBalance(operations) {
@@ -27,7 +27,7 @@ function operationsTotalBalance(operations) {
 
 async function dailyReport(bot, dbConnection, binanceAPI) {
   schedule.scheduleJob({ hour: 00, minute: 00, second: 30 }, async function () {
-    let tradingPool = await waitForBeermoneyBot(dbConnection);
+    await waitForBeermoneyBot(dbConnection);
     let users = await db.users.getAllUsers(dbConnection);
     let assets = ['BTC', 'USDT', 'BUSD', 'ETH'];
     for (let asset of assets) {
@@ -74,7 +74,7 @@ async function alertReport(bot, dbConnection) {
 
       // let alert = await getAlertOfFloor(dbConnection, floor);
 
-      floor.Pair = floor.Pair == 'BTC' ? 'sats' : floor.Pair;
+      floor.Price = floor.Pair == 'BTC' ? util.satoshiToBTC(floor.Price) : floor.Price;
 
       // ENTRY
       if (floor.Level == 0) {
@@ -93,13 +93,13 @@ async function alertReport(bot, dbConnection) {
 
         // PROFIT
         if (floor.NetProfit - 100 >= 0) {
-          message += '#' + floor.Asset + ' / #' + floor.Pair + '\n';
+          message += '#' + floor.Asset + ' / ' + floor.Pair + '\n';
           message += 'Exit Sell Price: ' + floor.Price + '\n';
           message += 'Duration: ' + dateDiff + 'min\n';
           message += 'Profit: ' + (floor.NetProfit - 100).toFixed(2) + '% 😎🍺';
           // LOSS
         } else {
-          message += '#' + floor.Asset + ' / #' + floor.Pair + '\n';
+          message += '#' + floor.Asset + ' / ' + floor.Pair + '\n';
           message += 'Exit Sell Price: ' + floor.Price + '\n';
           message += 'Duration: ' + dateDiff + 'min\n';
           message += 'Loss: ' + (floor.NetProfit - 100).toFixed(2) + '% 😢💸';
@@ -129,10 +129,12 @@ async function beermoneySignals(bot, dbConnection, binanceAPI) {
 
       // let alert = await getAlertOfFloor(dbConnection, floor);
 
+      floor.Price = floor.Pair == 'BTC' ? util.satoshiToBTC(floor.Price) : floor.Price;
+
       // ENTRY
       if (floor.Level == 0) {
         message += '#TradingPlan' + floor.FK_Trading_Plan + ' START 🏁\n\n';
-        message += '#' + floor.Asset + ' / #' + floor.Pair + '\n';
+        message += '#' + floor.Asset + ' / ' + floor.Pair + '\n';
         message += 'Entry Buy Price: ' + floor.Price + '\n';
         // message += 'Channel: ' + alert.Channel;
         status = await bot.telegram.sendMessage(config.beermoneySignals, message);

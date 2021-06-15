@@ -7,21 +7,24 @@ const { MenuMiddleware, MenuTemplate } = require('telegraf-inline-menu');
 const { currencyDisplayMenu, withdrawMenu } = require('./menu');
 
 async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
+  let assets = ['BTC', 'USDT', 'BUSD', 'ETH'];
   await bot.command('/saldo', async (ctx, next) => {
     await next();
     let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id);
-    let funds = await db.funds.getLastFundsFromUser(dbConnection, user);
-    let fundsSatoshis = util.numberWithCommas(funds.Amount);
-    let fundsBtc = util.satoshiToBTC(funds.Amount);
-    let fundsFIAT = util.numberWithCommas(((await binance.getTicker(binanceAPI)).BTCUSDT * fundsBtc).toFixed(2));
-    let fundsDisplay = user.Display == 'BTC' ? fundsBtc + ' BTC' : fundsSatoshis + ' sats';
-    let maxCapDisplay = user.Display == 'BTC' ? util.satoshiToBTC(user.Capacity) + ' BTC' : util.numberWithCommas(user.Capacity) + ' sats';
-    let BTCUSDT = (await binance.getTicker(binanceAPI)).BTCUSDT;
-    BTCUSDT = util.numberWithCommas(Math.floor(BTCUSDT));
-    await fundsMessage(ctx, user, fundsDisplay, fundsFIAT, maxCapDisplay, BTCUSDT);
+    for (let asset of assets) {
+      let ticker = asset == 'USDT' ? 1 : (await binance.getTicker(binanceAPI))[asset + 'USDT'];
+
+      let funds = await db.funds.getLastFundsFromUser(dbConnection, user, asset);
+
+      let fundsFIAT = util.numberWithCommas((ticker * funds.Amount).toFixed(2));
+      let fundsDisplay = asset == 'BTC' && user.Display == 'sats' ? util.numberWithCommas(util.btcToSatoshi(funds.Amount)) + ' sats' : funds.Amount + ' ' + asset;
+      let maxCapDisplay = asset == 'BTC' && user.Display == 'sats' ? util.numberWithCommas(util.btcToSatoshi(user[asset])) + ' sats' : user[asset] + ' ' + asset;
+      ticker = util.numberWithCommas(Number(ticker).toFixed(2));
+      await fundsMessage(ctx, fundsDisplay, fundsFIAT, maxCapDisplay, ticker, asset);
+    }
   });
 
-  await bot.command('/results', async (ctx, next) => {
+  await bot.command('/privateChannel', async (ctx, next) => {
     await resultsChannelMessage(ctx, bot);
   });
 
