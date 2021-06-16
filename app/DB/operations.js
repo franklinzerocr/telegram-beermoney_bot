@@ -1,6 +1,6 @@
-async function storeDepositOperation(dbConnection, funds, txId) {
+async function storeDepositOperation(dbConnection, user, txId) {
   try {
-    let result = await dbConnection.query('INSERT INTO `operations` (`Type`,`txId`,`FK_User`, `FK_Funds`)' + 'VALUES ("Deposit",  "' + txId + '",' + funds.FK_User + ',' + funds.ID + ');');
+    let result = await dbConnection.query('INSERT INTO `operations` (`Type`,`txId`,`FK_User`)' + 'VALUES ("Deposit",  "' + txId + '",' + user.ID + ');');
     return result.insertId;
   } catch (e) {
     console.log(e);
@@ -11,7 +11,13 @@ async function storeDepositOperation(dbConnection, funds, txId) {
 
 async function storeWithdrawalOperation(dbConnection, funds, amount) {
   try {
-    let result = await dbConnection.query('INSERT INTO `operations` (`Type`,`Amount`,`Status`,`FK_User`, `FK_Funds`)' + 'VALUES ("Withdrawal",  ' + amount + ',"Confirmed",' + funds.FK_User + ',' + funds.ID + ');');
+    let sum = await dbConnection.query('SELECT coalesce(sum(Amount),0) sum  FROM operations WHERE FK_Funds=' + funds.ID);
+    console.log(sum[0].sum);
+    console.log(sum[0].sum + amount);
+    console.log(funds.Amount);
+    if (sum[0].sum + amount > funds.Amount) return false;
+
+    let result = await dbConnection.query('INSERT INTO `operations` (`Type`,`Asset`,`Amount`,`Status`,`FK_User`, `FK_Funds`)' + 'VALUES ("Withdrawal",  "' + funds.Asset + '",' + amount + ',"Confirmed",' + funds.FK_User + ',' + funds.ID + ');');
     return result.insertId;
   } catch (e) {
     console.log(e);

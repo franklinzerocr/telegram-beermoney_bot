@@ -41,13 +41,11 @@ const currencyDisplayMenu = async (dbConnection, menuTemplate) => {
 };
 
 const withdrawMenu = async (bot, menuTemplate) => {
-  const menuBtc = new MenuTemplate(async () => await currencyWithdrawMessage());
-  const menuSats = new MenuTemplate(async () => await currencyWithdrawMessage());
-  let mainMenuToggleBtc = false;
-  let mainMenuToggleSats = false;
+  const currencyMenu = new MenuTemplate(async () => await currencyWithdrawMessage());
+  let withdrawToggle = false;
 
-  menuBtc.interact('BTC', 'BTCwithdraw', {
-    hide: () => mainMenuToggleBtc,
+  currencyMenu.interact('BTC', 'BTCwithdraw', {
+    hide: () => withdrawToggle,
     do: async (ctx) => {
       await ctx.scene.enter('WITHDRAW_BTC_ID');
       await bot.launch();
@@ -56,41 +54,40 @@ const withdrawMenu = async (bot, menuTemplate) => {
     },
   });
 
-  menuBtc.interact('FIAT', 'BTCFIATwithdraw', {
+  currencyMenu.interact('USDT', 'USDTwithdraw', {
     joinLastRow: true,
-    hide: () => mainMenuToggleBtc,
+    hide: () => withdrawToggle,
     do: async (ctx) => {
-      await ctx.scene.enter('WITHDRAW_FIAT_ID');
+      await ctx.scene.enter('WITHDRAW_USDT_ID');
       await bot.launch();
       await deleteMenuFromContext(ctx);
       return false;
     },
   });
 
-  menuSats.interact('sats', 'satswithdraw', {
-    hide: () => mainMenuToggleSats,
-    do: async (ctx) => {
-      await ctx.scene.enter('WITHDRAW_SATS_ID');
-      await bot.launch();
-      await deleteMenuFromContext(ctx);
-      return false;
-    },
-  });
-
-  menuSats.interact('FIAT', 'satsFIATwithdraw', {
+  currencyMenu.interact('BUSD', 'BUSDwithdraw', {
     joinLastRow: true,
-    hide: () => mainMenuToggleSats,
+    hide: () => withdrawToggle,
     do: async (ctx) => {
-      await ctx.scene.enter('WITHDRAW_FIAT_ID');
+      await ctx.scene.enter('WITHDRAW_BUSD_ID');
       await bot.launch();
       await deleteMenuFromContext(ctx);
       return false;
     },
   });
 
-  menuTemplate.submenu('/BtcWithdrawal', 'BtcWithdrawal', menuBtc);
+  currencyMenu.interact('ETH', 'ETHwithdraw', {
+    joinLastRow: true,
+    hide: () => withdrawToggle,
+    do: async (ctx) => {
+      await ctx.scene.enter('WITHDRAW_ETH_ID');
+      await bot.launch();
+      await deleteMenuFromContext(ctx);
+      return false;
+    },
+  });
 
-  menuTemplate.submenu('/SatsWithdrawal', 'SatsWithdrawal', menuSats);
+  menuTemplate.submenu('/CurrencyWithdrawal', 'CurrencyWithdrawal', currencyMenu);
 
   return menuTemplate;
 };

@@ -53,16 +53,27 @@ async function chosenCurrencyMessage(ctx, currency) {
 }
 
 async function showDepositAddressInstructionalMessage(ctx) {
-  await ctx.replyWithMarkdown('*Puedes depositar Bitcoin que a cualquiera de estas direcciones dentro de Binance* o /backToMenu');
-  await ctx.reply('Red BTC 👇');
+  await ctx.replyWithMarkdown('\n*BTC*👇');
+  await ctx.replyWithMarkdown('_Red BTC_:');
   await ctx.reply(config.BTC_BTC);
-  await ctx.reply('Red BEP20 (BSC) 👇');
+  await ctx.replyWithMarkdown('_Red BEP20 (BSC)_:');
   await ctx.reply(config.BTC_BEP20);
-  await ctx.replyWithMarkdown('*- Ingresa el *_txid_* de la transferencia*');
+  await ctx.replyWithMarkdown('\n*USDT* 👇');
+  await ctx.replyWithMarkdown('_Red TRC20_:');
+  await ctx.reply(config.USDT_TRC20);
+  await ctx.replyWithMarkdown('_Red BEP20 (BSC)_:');
+  await ctx.reply(config.USDT_BEP20);
+  await ctx.replyWithMarkdown('*BUSD* 👇');
+  await ctx.replyWithMarkdown('_Red BEP20 (BSC)_:');
+  await ctx.reply(config.BUSD_BEP20);
+  await ctx.replyWithMarkdown('*ETH* 👇');
+  await ctx.replyWithMarkdown('_Red BEP20 (BSC)_:');
+  await ctx.reply(config.ETH_BEP20);
+  await ctx.replyWithMarkdown('*- Ingresa el *_txid_* de la transferencia y espera el mensaje de confirmación*');
 }
 
 async function realTxidMessage(ctx) {
-  ctx.reply('🚫 Porfavor ingresa un txId correcto o /backToMenu');
+  ctx.reply('🚫 Porfavor ingresa un txId correcto o vuelva al menu principal marcando /backToMenu');
 }
 
 async function depositStoredMessage(ctx) {
@@ -70,20 +81,23 @@ async function depositStoredMessage(ctx) {
 }
 
 async function currencyWithdrawMessage() {
-  return 'Elige la moneda para expresar el monto a retirar:';
+  return 'Elige el saldo del cual retirar 👇';
 }
 
-async function btcWithdrawalInstructionsMessage(ctx, fundsBtc, fundsFIAT, minBtc, minFIAT) {
-  ctx.reply('Retiro maximo: ' + fundsBtc + ' BTC ($' + fundsFIAT + ')\nRetiro minimo: ' + minBtc + ' BTC ($' + minFIAT + ')');
-  ctx.replyWithMarkdown('*- Ingresa el monto en* _BTC_ *a retirar o /backToMenu:*');
+async function btcWithdrawalInstructionsMessage(ctx, funds, fundsFIAT, minWithdrawal, minFIAT, asset) {
+  ctx.reply('Saldo disponible: ' + funds + ' ' + asset + ' ($' + fundsFIAT + ')\nRetiro minimo: ' + minWithdrawal + ' ' + asset + ' ($' + minFIAT + ')');
+  ctx.replyWithMarkdown('*- Ingresa el monto de* _' + asset + '_ *a retirar y espere el mensaje de confirmacion o vuelva al menu principal marcando /backToMenu:*');
 }
 
 async function realAmountMessage(ctx) {
-  ctx.reply('🚫 Porfavor ingresa un monto correcto dentro de los limites o /backToMenu');
+  ctx.reply('🚫 Porfavor ingresa un monto correcto dentro de los limites o vuelva al menu principal marcando /backToMenu');
 }
 
 async function withdrawalStoredMessage(ctx) {
   ctx.replyWithMarkdown('✅ Tu _Retiro_ ha sido registrado con exito. Espera al proximo corte diario para que se actualicen tus fondos');
+}
+async function withdrawalErrorMessage(ctx) {
+  ctx.replyWithMarkdown('🚫 Ocurrio un error procesando tu retiro. Verifica montos disponibles o contacta soporte @franklinzerocr');
 }
 
 async function satsWithdrawalInstructionsMessage(ctx, fundsSats, fundsFIAT, minSats, minFIAT) {
@@ -142,4 +156,5 @@ module.exports = {
   notUniqueTxidMessage,
   dailyReportIntroMessage,
   fundsIntroMessage,
+  withdrawalErrorMessage,
 };

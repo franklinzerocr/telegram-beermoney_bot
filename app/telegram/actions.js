@@ -57,7 +57,7 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
 
   bot.command('/retirar', async (ctx) => {
     let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id);
-    user.Display == 'BTC' ? await menuMiddleware.replyToContext(ctx, '/BtcWithdrawal/') : await menuMiddleware.replyToContext(ctx, '/SatsWithdrawal/');
+    await menuMiddleware.replyToContext(ctx, '/CurrencyWithdrawal/');
   });
 
   bot.use(menuMiddleware.middleware());
