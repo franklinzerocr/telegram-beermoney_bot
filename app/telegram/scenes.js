@@ -40,6 +40,23 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI) {
     return ctx;
   }
 
+  async function wallet1stPart(ctx, asset) {
+    let user = await checkAuth(dbConnection, ctx.update.callback_query.from.username, ctx.update.callback_query.from.id, ctx);
+    let wallet = await db.wallet_address.getWalletFromUser(dbConnection, user, asset);
+    await updateWalletAddressInstructionalMessage(ctx, wallet);
+    leaveSceneTimeout(ctx);
+    return ctx;
+  }
+  async function wallet2ndPart(ctx, asset, walletAddress) {
+    let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id, ctx);
+    let wallet = await db.wallet_address.getWalletFromUser(dbConnection, user, asset);
+    await db.wallet_address.updateWalletAddress(dbConnection, wallet, walletAddress);
+    await walletUpdateMessage(ctx);
+    await util.sleep(2500);
+    await mainMenuMessage(ctx);
+    return ctx;
+  }
+
   const depositWizard = new Scenes.WizardScene(
     'DEPOSIT_ID', // first argument is Scene_ID, same as for BaseScene
     async (ctx) => {
@@ -160,14 +177,10 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI) {
     }
   );
 
-  const walletWizard = new Scenes.WizardScene(
-    'WALLET_UPDATE_ID', // first argument is Scene_ID, same as for BaseScene
+  const walletBTCWizard = new Scenes.WizardScene(
+    'WALLET_UPDATE_BTC_ID', // first argument is Scene_ID, same as for BaseScene
     async (ctx) => {
-      let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id, ctx);
-      let wallet = await db.wallet_address.getWalletFromUser(dbConnection, user);
-      await updateWalletAddressInstructionalMessage(ctx, wallet);
-      leaveSceneTimeout(ctx);
-
+      ctx = await wallet1stPart(ctx, 'BTC');
       return ctx.wizard.next();
     },
     async (ctx) => {
@@ -177,22 +190,79 @@ async function beermoneyScenes(bot, dbConnection, binanceAPI) {
       }
 
       let walletAddress = String(ctx.message.text);
-      if (walletAddress.length < 27) {
+      if (walletAddress.length < 20) {
         await realWalletMessage(ctx);
         return;
       }
+      ctx = await wallet2ndPart(ctx, 'BTC', walletAddress);
+      return await ctx.scene.leave();
+    }
+  );
+  const walletUSDTWizard = new Scenes.WizardScene(
+    'WALLET_UPDATE_USDT_ID', // first argument is Scene_ID, same as for BaseScene
+    async (ctx) => {
+      ctx = await wallet1stPart(ctx, 'USDT');
+      return ctx.wizard.next();
+    },
+    async (ctx) => {
+      if (String(ctx.message.text).toUpperCase().includes('/BACKTOMENU')) {
+        await mainMenuMessage(ctx);
+        return await ctx.scene.leave();
+      }
 
-      let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id, ctx);
-      let wallet = await db.wallet_address.getWalletFromUser(dbConnection, user);
-      await db.wallet_address.updateWalletAddress(dbConnection, wallet, walletAddress);
-      await walletUpdateMessage(ctx);
-      await util.sleep(2000);
-      await mainMenuMessage(ctx);
+      let walletAddress = String(ctx.message.text);
+      if (walletAddress.length < 20) {
+        await realWalletMessage(ctx);
+        return;
+      }
+      ctx = await wallet2ndPart(ctx, 'USDT', walletAddress);
+      return await ctx.scene.leave();
+    }
+  );
+  const walletBUSDWizard = new Scenes.WizardScene(
+    'WALLET_UPDATE_BUSD_ID', // first argument is Scene_ID, same as for BaseScene
+    async (ctx) => {
+      ctx = await wallet1stPart(ctx, 'BUSD');
+      return ctx.wizard.next();
+    },
+    async (ctx) => {
+      if (String(ctx.message.text).toUpperCase().includes('/BACKTOMENU')) {
+        await mainMenuMessage(ctx);
+        return await ctx.scene.leave();
+      }
+
+      let walletAddress = String(ctx.message.text);
+      if (walletAddress.length < 20) {
+        await realWalletMessage(ctx);
+        return;
+      }
+      ctx = await wallet2ndPart(ctx, 'BUSD', walletAddress);
+      return await ctx.scene.leave();
+    }
+  );
+  const walletETHWizard = new Scenes.WizardScene(
+    'WALLET_UPDATE_ETH_ID', // first argument is Scene_ID, same as for BaseScene
+    async (ctx) => {
+      ctx = await wallet1stPart(ctx, 'ETH');
+      return ctx.wizard.next();
+    },
+    async (ctx) => {
+      if (String(ctx.message.text).toUpperCase().includes('/BACKTOMENU')) {
+        await mainMenuMessage(ctx);
+        return await ctx.scene.leave();
+      }
+
+      let walletAddress = String(ctx.message.text);
+      if (walletAddress.length < 20) {
+        await realWalletMessage(ctx);
+        return;
+      }
+      ctx = await wallet2ndPart(ctx, 'ETH', walletAddress);
       return await ctx.scene.leave();
     }
   );
 
-  const stage = new Scenes.Stage([depositWizard, withdrawBTCWizard, withdrawUSDTWizard, withdrawBUSDWizard, withdrawETHWizard, walletWizard]);
+  const stage = new Scenes.Stage([depositWizard, withdrawBTCWizard, withdrawUSDTWizard, withdrawBUSDWizard, withdrawETHWizard, walletBTCWizard, walletUSDTWizard, walletBUSDWizard, walletETHWizard]);
   bot.use(session()); // to  be precise, session is not a must have for Scenes to work, but it sure is lonely without one
   bot.use(stage.middleware());
 }

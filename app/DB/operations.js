@@ -12,9 +12,6 @@ async function storeDepositOperation(dbConnection, user, txId) {
 async function storeWithdrawalOperation(dbConnection, funds, amount) {
   try {
     let sum = await dbConnection.query('SELECT coalesce(sum(Amount),0) sum  FROM operations WHERE FK_Funds=' + funds.ID);
-    console.log(sum[0].sum);
-    console.log(sum[0].sum + amount);
-    console.log(funds.Amount);
     if (sum[0].sum + amount > funds.Amount) return false;
 
     let result = await dbConnection.query('INSERT INTO `operations` (`Type`,`Asset`,`Amount`,`Status`,`FK_User`, `FK_Funds`)' + 'VALUES ("Withdrawal",  "' + funds.Asset + '",' + amount + ',"Confirmed",' + funds.FK_User + ',' + funds.ID + ');');

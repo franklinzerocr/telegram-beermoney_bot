@@ -4,7 +4,7 @@ const util = require('../util');
 const { checkAuth } = require('./auth');
 const { mainMenuMessage, fundsMessage, resultsChannelMessage, helpMessage } = require('./messages');
 const { MenuMiddleware, MenuTemplate } = require('telegraf-inline-menu');
-const { currencyDisplayMenu, withdrawMenu } = require('./menu');
+const { currencyDisplayMenu, withdrawMenu, walletConfigurationMenu } = require('./menu');
 
 async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
   let assets = ['BTC', 'USDT', 'BUSD', 'ETH'];
@@ -40,14 +40,14 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
   });
 
   await bot.command('/config', async (ctx, next) => {
-    await ctx.scene.enter('WALLET_UPDATE_ID');
-    await bot.launch();
+    await menuMiddleware.replyToContext(ctx, '/WalletConfiguration/');
   });
 
   let menuTemplate = new MenuTemplate();
 
   menuTemplate = await currencyDisplayMenu(dbConnection, menuTemplate);
   menuTemplate = await withdrawMenu(bot, menuTemplate);
+  menuTemplate = await walletConfigurationMenu(bot, menuTemplate);
 
   const menuMiddleware = new MenuMiddleware('/', menuTemplate);
 
@@ -56,7 +56,6 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
   });
 
   bot.command('/retirar', async (ctx) => {
-    let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id);
     await menuMiddleware.replyToContext(ctx, '/CurrencyWithdrawal/');
   });
 

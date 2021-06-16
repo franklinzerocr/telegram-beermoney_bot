@@ -53,23 +53,24 @@ async function chosenCurrencyMessage(ctx, currency) {
 }
 
 async function showDepositAddressInstructionalMessage(ctx) {
+  await ctx.replyWithMarkdown('Estas son las direcciones destino 🧐:');
   await ctx.replyWithMarkdown('\n*BTC*👇');
   await ctx.replyWithMarkdown('_Red BTC_:');
-  await ctx.reply(config.BTC_BTC);
-  await ctx.replyWithMarkdown('_Red BEP20 (BSC)_:');
-  await ctx.reply(config.BTC_BEP20);
+  await ctx.reply(config.Adresses.BTC_BTC);
+  await ctx.replyWithMarkdown('_Red BEP20 / ERC20 _:');
+  await ctx.reply(config.Adresses.BTC_ERC20);
   await ctx.replyWithMarkdown('\n*USDT* 👇');
+  await ctx.replyWithMarkdown('_Red BEP20 / ERC20_:');
+  await ctx.reply(config.Adresses.USDT_ERC20);
   await ctx.replyWithMarkdown('_Red TRC20_:');
-  await ctx.reply(config.USDT_TRC20);
-  await ctx.replyWithMarkdown('_Red BEP20 (BSC)_:');
-  await ctx.reply(config.USDT_BEP20);
+  await ctx.reply(config.Adresses.USDT_TRC20);
   await ctx.replyWithMarkdown('*BUSD* 👇');
-  await ctx.replyWithMarkdown('_Red BEP20 (BSC)_:');
-  await ctx.reply(config.BUSD_BEP20);
+  await ctx.replyWithMarkdown('_Red BEP20 / ERC20_:');
+  await ctx.reply(config.Adresses.BUSD_ERC20);
   await ctx.replyWithMarkdown('*ETH* 👇');
-  await ctx.replyWithMarkdown('_Red BEP20 (BSC)_:');
-  await ctx.reply(config.ETH_BEP20);
-  await ctx.replyWithMarkdown('*- Ingresa el *_txid_* de la transferencia y espera el mensaje de confirmación*');
+  await ctx.replyWithMarkdown('_Red BEP20 / ERC20_:');
+  await ctx.reply(config.Adresses.ETH_ERC20);
+  await ctx.replyWithMarkdown('*- Ingresa el *_txid_* de la transferencia a alguna de estas direcciones y espera el mensaje de confirmación o vuelva al menu principal marcando /backToMenu*');
 }
 
 async function realTxidMessage(ctx) {
@@ -82,6 +83,10 @@ async function depositStoredMessage(ctx) {
 
 async function currencyWithdrawMessage() {
   return 'Elige el saldo del cual retirar 👇';
+}
+
+async function walletConfigurationMessage() {
+  return 'Elige la wallet de retiro a configurar 👇';
 }
 
 async function btcWithdrawalInstructionsMessage(ctx, funds, fundsFIAT, minWithdrawal, minFIAT, asset) {
@@ -123,7 +128,7 @@ async function notUniqueTxidMessage(ctx) {
 }
 
 async function updateWalletAddressInstructionalMessage(ctx, wallet) {
-  await ctx.replyWithMarkdown('Tu wallet actual es:\n' + wallet.Wallet + '\n\n*- Ingresa la nueva* _Wallet Address_ * de BTC a utilizar en Beermoney o /backToMenu* 👛');
+  await ctx.replyWithMarkdown('Tu wallet *' + wallet.Asset + '* (RED ' + config.network[wallet.Asset] + ') de retiro acutal es:\n_' + wallet.Wallet + '_\n\n*- Ingresa la nueva* _Wallet Address_ * de ' + wallet.Asset + ' a utilizar en Beermoney o vuelve al menu principal marcando /backToMenu* 👛');
 }
 
 async function helpMessage(ctx, user) {
@@ -157,4 +162,5 @@ module.exports = {
   dailyReportIntroMessage,
   fundsIntroMessage,
   withdrawalErrorMessage,
+  walletConfigurationMessage,
 };

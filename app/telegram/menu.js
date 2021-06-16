@@ -1,5 +1,5 @@
 const { MenuTemplate, deleteMenuFromContext } = require('telegraf-inline-menu');
-const { currencyMenuMessage, chosenCurrencyMessage, currencyWithdrawMessage, mainMenuMessage } = require('./messages');
+const { currencyMenuMessage, chosenCurrencyMessage, currencyWithdrawMessage, mainMenuMessage, walletConfigurationMessage } = require('./messages');
 const db = require('../DB/db');
 const util = require('../util');
 const { checkAuth } = require('./auth');
@@ -91,8 +91,60 @@ const withdrawMenu = async (bot, menuTemplate) => {
 
   return menuTemplate;
 };
+const walletConfigurationMenu = async (bot, menuTemplate) => {
+  const walletMenu = new MenuTemplate(async () => await walletConfigurationMessage());
+  let withdrawToggle = false;
+
+  walletMenu.interact('BTC', 'BTCconfig', {
+    hide: () => withdrawToggle,
+    do: async (ctx) => {
+      await ctx.scene.enter('WALLET_UPDATE_BTC_ID');
+      await bot.launch();
+      await deleteMenuFromContext(ctx);
+      return false;
+    },
+  });
+
+  walletMenu.interact('USDT', 'USDTconfig', {
+    joinLastRow: true,
+    hide: () => withdrawToggle,
+    do: async (ctx) => {
+      await ctx.scene.enter('WALLET_UPDATE_USDT_ID');
+      await bot.launch();
+      await deleteMenuFromContext(ctx);
+      return false;
+    },
+  });
+
+  walletMenu.interact('BUSD', 'BUSDconfig', {
+    joinLastRow: true,
+    hide: () => withdrawToggle,
+    do: async (ctx) => {
+      await ctx.scene.enter('WALLET_UPDATE_BUSD_ID');
+      await bot.launch();
+      await deleteMenuFromContext(ctx);
+      return false;
+    },
+  });
+
+  walletMenu.interact('ETH', 'ETHconfig', {
+    joinLastRow: true,
+    hide: () => withdrawToggle,
+    do: async (ctx) => {
+      await ctx.scene.enter('WALLET_UPDATE_ETH_ID');
+      await bot.launch();
+      await deleteMenuFromContext(ctx);
+      return false;
+    },
+  });
+
+  menuTemplate.submenu('/WalletConfiguration', 'WalletConfiguration', walletMenu);
+
+  return menuTemplate;
+};
 
 module.exports = {
   currencyDisplayMenu,
   withdrawMenu,
+  walletConfigurationMenu,
 };

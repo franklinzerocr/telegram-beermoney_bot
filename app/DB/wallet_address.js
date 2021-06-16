@@ -1,6 +1,6 @@
-async function getWalletFromUser(dbConnection, user) {
+async function getWalletFromUser(dbConnection, user, asset) {
   try {
-    let result = await dbConnection.query('SELECT * FROM wallet_address WHERE FK_User=' + user.ID + ' ORDER BY ID DESC LIMIT 1');
+    let result = await dbConnection.query('SELECT * FROM wallet_address WHERE FK_User=' + user.ID + ' AND Asset="' + asset + '"  ORDER BY ID DESC LIMIT 1');
     return result[0];
   } catch (e) {
     console.log(e);
