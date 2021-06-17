@@ -10,7 +10,7 @@ const bot = new Telegraf(config.telegram.key);
 
 async function go(DBsystem, DBbeermoney, binanceAPI) {
   bot.start(async (ctx) => {
-    let user = await checkAuth(DBsystem, ctx.update.message.from.username, ctx.update.message.from.id, ctx);
+    let user = await checkAuth(DBsystem, ctx.update.message.from.username, ctx.update.message.from.id, ctx, bot);
     if (user) {
       await welcomeMessage(ctx, user);
       await mainMenuMessage(ctx);
@@ -30,7 +30,7 @@ async function go(DBsystem, DBbeermoney, binanceAPI) {
   });
 
   // Autopilot BOT
-  // await initialMessage(bot, DBsystem);
+  await initialMessage(bot, DBsystem);
   await dailyReport(bot, DBsystem, binanceAPI);
   await alertReport(bot, DBbeermoney);
   await beermoneySignals(bot, DBbeermoney, binanceAPI);

@@ -78,8 +78,8 @@ async function alertReport(bot, dbConnection) {
 
       // ENTRY
       if (floor.Level == 0) {
-        message += '#TradingPlan' + floor.FK_Trading_Plan + ' START!!!\n\n';
-        message += '#' + floor.Asset + ' / #' + floor.Pair + '\n';
+        message += '#TradingPlan' + floor.FK_Trading_Plan + ' START! 🏁\n\n';
+        message += '#' + floor.Asset + ' / ' + floor.Pair + '\n';
         message += 'Entry Buy Price: ' + floor.Price + '\n';
         // message += 'Channel: ' + alert.Channel;
         status = await bot.telegram.sendMessage(config.channel, message);
@@ -93,12 +93,14 @@ async function alertReport(bot, dbConnection) {
 
         // PROFIT
         if (floor.NetProfit - 100 >= 0) {
+          message += '#TradingPlan' + floor.FK_Trading_Plan + 'END\n\n';
           message += '#' + floor.Asset + ' / ' + floor.Pair + '\n';
           message += 'Exit Sell Price: ' + floor.Price + '\n';
           message += 'Duration: ' + dateDiff + 'min\n';
           message += 'Profit: ' + (floor.NetProfit - 100).toFixed(2) + '% 😎🍺';
           // LOSS
         } else {
+          message += '#TradingPlan' + floor.FK_Trading_Plan + 'END\n\n';
           message += '#' + floor.Asset + ' / ' + floor.Pair + '\n';
           message += 'Exit Sell Price: ' + floor.Price + '\n';
           message += 'Duration: ' + dateDiff + 'min\n';
@@ -106,6 +108,7 @@ async function alertReport(bot, dbConnection) {
         }
 
         status = await bot.telegram.sendMessage(config.channel, message, { reply_to_message_id: initialFloor.TelegramID });
+        // console.log(status);
       }
       await updateTelegramFloor(dbConnection, floor, status.message_id);
     }
