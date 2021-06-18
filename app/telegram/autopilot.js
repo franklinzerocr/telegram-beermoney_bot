@@ -26,15 +26,16 @@ function operationsTotalBalance(operations) {
 }
 
 async function dailyReport(bot, dbConnection, binanceAPI) {
-  schedule.scheduleJob({ hour: 00, minute: 00, second: 30 }, async function () {
+  schedule.scheduleJob({ hour: 00, minute: 01, second: 00 }, async function () {
     await waitForBeermoneyBot(dbConnection);
     let users = await db.users.getAllUsers(dbConnection);
     let assets = ['BTC', 'USDT', 'BUSD', 'ETH'];
     for (let asset of assets) {
       let ticker = asset == 'USDT' ? 1 : (await binance.getTicker(binanceAPI))[asset + 'USDT'];
       for (let user of users) {
+        // if (user.Beermoney)
         if (user.T_userid) {
-          asset == 'BTC' ? dailyReportIntroMessage(bot, user) : null;
+          asset == 'BTC' ? await dailyReportIntroMessage(bot, user) : null;
           let funds = await db.funds.getPreviousTwoFundsFromUser(dbConnection, user, asset);
           let fundsDisplay = [],
             fundsAmount = [];
@@ -51,7 +52,7 @@ async function dailyReport(bot, dbConnection, binanceAPI) {
           let earnings = funds[0].Profit;
           earnings = asset == 'BTC' && user.Display == 'sats' ? util.numberWithCommas(util.btcToSatoshi(earnings)) + ' sats' : earnings + ' ' + asset;
           ticker = util.numberWithCommas(Math.floor(ticker));
-          dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, BTCUSDT, earnings, unconfirmedOperations.length, operationsBalance, operationsBalanceDisplay, funds[0].Amount, asset);
+          await dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, earnings, unconfirmedOperations.length, operationsBalance, operationsBalanceDisplay, funds[0].Amount, asset);
         }
       }
     }

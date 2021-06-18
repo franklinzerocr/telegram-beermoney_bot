@@ -30,7 +30,7 @@ async function go(DBsystem, DBbeermoney, binanceAPI) {
   });
 
   // Autopilot BOT
-  await initialMessage(bot, DBsystem);
+  // await initialMessage(bot, DBsystem);
   await dailyReport(bot, DBsystem, binanceAPI);
   await alertReport(bot, DBbeermoney);
   await beermoneySignals(bot, DBbeermoney, binanceAPI);

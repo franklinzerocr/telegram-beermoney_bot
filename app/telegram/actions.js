@@ -10,6 +10,7 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
   let assets = ['BTC', 'USDT', 'BUSD', 'ETH'];
   await bot.command('/saldo', async (ctx, next) => {
     await next();
+    console.log(ctx.update.message);
     let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id);
     for (let asset of assets) {
       let ticker = asset == 'USDT' ? 1 : (await binance.getTicker(binanceAPI))[asset + 'USDT'];
@@ -22,9 +23,11 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
       ticker = util.numberWithCommas(Number(ticker).toFixed(2));
       await fundsMessage(ctx, fundsDisplay, fundsFIAT, maxCapDisplay, ticker, asset);
     }
+    await util.sleep(2500);
+    await mainMenuMessage(ctx);
   });
 
-  await bot.command('/privateChannel', async (ctx, next) => {
+  await bot.command('/privatechannel', async (ctx, next) => {
     await resultsChannelMessage(ctx, bot);
   });
 
@@ -35,11 +38,15 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
   });
 
   await bot.command('/depositar', async (ctx) => {
+    console.log(ctx.update.message);
+
     await ctx.scene.enter('DEPOSIT_ID');
     await bot.launch();
   });
 
   await bot.command('/config', async (ctx, next) => {
+    console.log(ctx.update.message);
+
     await menuMiddleware.replyToContext(ctx, '/WalletConfiguration/');
   });
 
@@ -52,10 +59,14 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
   const menuMiddleware = new MenuMiddleware('/', menuTemplate);
 
   bot.command('/moneda', async (ctx) => {
+    console.log(ctx.update.message);
+
     await menuMiddleware.replyToContext(ctx, '/ChooseCurrency/');
   });
 
   bot.command('/retirar', async (ctx) => {
+    console.log(ctx.update.message);
+
     await menuMiddleware.replyToContext(ctx, '/CurrencyWithdrawal/');
   });
 
