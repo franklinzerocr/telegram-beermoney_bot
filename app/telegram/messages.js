@@ -1,11 +1,11 @@
 const config = require('config');
 
 async function welcomeMessage(ctx, user) {
-  ctx.reply('¡Bienvenid@ ' + user.Username + '!\nHas vinculado tu cuenta exitosamente');
+  await ctx.reply('¡Bienvenid@ ' + user.Username + '!\nHas vinculado tu cuenta exitosamente');
 }
 
 async function mainMenuMessage(ctx) {
-  ctx.reply('Beermoney BOT tiene las siguientes opciones:\n\n/saldo - Checa tu saldo actual en Beermoney\n/depositar - Ingresa un deposito a Beermoney\n/retirar - Retira tus fondos de Beermoney\n/config - Gestiona tu wallet de retiro\n/moneda - Cambia la unidad de cuenta (BTC o sats)\n/privatechannel - Obten link para el canal de telegram privado\n/help - Guia de Beermoney BOT para dummies\n\nSupport: @franklinzerocr\n🍺😎');
+  await ctx.reply('Beermoney BOT tiene las siguientes opciones:\n\n/saldo - Checa tu saldo actual en Beermoney\n/depositar - Ingresa un deposito a Beermoney\n/retirar - Retira tus fondos de Beermoney\n/config - Gestiona tu wallet de retiro\n/moneda - Cambia la unidad de cuenta (BTC o sats)\n/privatechannel - Obten link para el canal de telegram privado\n/help - Guia de Beermoney BOT para dummies\n\nSupport: @franklinzerocr\n🍺😎');
 }
 
 async function fundsIntroMessage(ctx, user) {
@@ -13,7 +13,7 @@ async function fundsIntroMessage(ctx, user) {
 }
 
 async function fundsMessage(ctx, fundsDisplay, fundsFIAT, maxCapDisplay, ticker, asset) {
-  ctx.replyWithMarkdown(asset + ':\n\n*' + fundsDisplay + '* ($' + fundsFIAT + ')\nMax Cap: ' + maxCapDisplay + '\n\nPrecio del ' + asset + ': $' + ticker + ' 🤑');
+  await ctx.replyWithMarkdown(asset + ':\n\n*' + fundsDisplay + '* ($' + fundsFIAT + ')\nMax Cap: ' + maxCapDisplay + '\n\nPrecio del ' + asset + ': $' + ticker + ' 🤑');
 }
 
 async function dailyReportIntroMessage(bot, user) {
@@ -49,7 +49,7 @@ async function unauthorizedMessage(ctx) {
 
 async function resultsChannelMessage(ctx, bot) {
   let inviteLink = await bot.telegram.exportChatInviteLink(config.channel);
-  ctx.reply('Ingresa al canal privado de Beermoney aqui ' + inviteLink);
+  await ctx.reply('Ingresa al canal privado de Beermoney aqui ' + inviteLink);
 }
 
 async function currencyMenuMessage() {
@@ -57,7 +57,7 @@ async function currencyMenuMessage() {
 }
 
 async function chosenCurrencyMessage(ctx, currency) {
-  ctx.replyWithMarkdown('✅ Los montos se mostraran en: *' + currency + '*');
+  await ctx.replyWithMarkdown('✅ Los montos se mostraran en: *' + currency + '*');
 }
 
 async function showDepositAddressInstructionalMessage(ctx) {
@@ -82,11 +82,11 @@ async function showDepositAddressInstructionalMessage(ctx) {
 }
 
 async function realTxidMessage(ctx) {
-  ctx.reply('🚫 Porfavor ingresa un txId correcto o vuelva al menu principal marcando /backToMenu');
+  await ctx.reply('🚫 Porfavor ingresa un txId correcto o vuelva al menu principal marcando /backToMenu');
 }
 
 async function depositStoredMessage(ctx) {
-  ctx.replyWithMarkdown('✅ Tu _Deposito_ ha sido registrado con exito. Espera al proximo corte diario para que se actualicen tus fondos');
+  await ctx.replyWithMarkdown('✅ Tu _Deposito_ ha sido registrado con exito. Espera al proximo corte diario para que se actualicen tus fondos');
 }
 
 async function currencyWithdrawMessage() {
@@ -98,41 +98,41 @@ async function walletConfigurationMessage() {
 }
 
 async function btcWithdrawalInstructionsMessage(ctx, funds, fundsFIAT, minWithdrawal, minFIAT, asset) {
-  ctx.reply('Saldo disponible: ' + funds + ' ' + asset + ' ($' + fundsFIAT + ')\nRetiro minimo: ' + minWithdrawal + ' ' + asset + ' ($' + minFIAT + ')');
-  ctx.replyWithMarkdown('*- Ingresa el monto de* _' + asset + '_ *a retirar y espere el mensaje de confirmacion o vuelva al menu principal marcando /backToMenu:*');
+  await ctx.reply('Saldo disponible: ' + funds + ' ' + asset + ' ($' + fundsFIAT + ')\nRetiro minimo: ' + minWithdrawal + ' ' + asset + ' ($' + minFIAT + ')');
+  await ctx.replyWithMarkdown('*- Ingresa el monto de* _' + asset + '_ *a retirar y espere el mensaje de confirmacion o vuelva al menu principal marcando /backToMenu:*');
 }
 
 async function realAmountMessage(ctx) {
-  ctx.reply('🚫 Porfavor ingresa un monto correcto dentro de los limites o vuelva al menu principal marcando /backToMenu');
+  await ctx.reply('🚫 Porfavor ingresa un monto correcto dentro de los limites o vuelva al menu principal marcando /backToMenu');
 }
 
 async function withdrawalStoredMessage(ctx) {
-  ctx.replyWithMarkdown('✅ Tu _Retiro_ ha sido registrado con exito. Espera al proximo corte diario para que se actualicen tus fondos');
+  await ctx.replyWithMarkdown('✅ Tu _Retiro_ ha sido registrado con exito. Espera al proximo corte diario para que se actualicen tus fondos');
 }
 async function withdrawalErrorMessage(ctx) {
-  ctx.replyWithMarkdown('🚫 Ocurrio un error procesando tu retiro. Verifica montos disponibles o contacta soporte @franklinzerocr');
+  await ctx.replyWithMarkdown('🚫 Ocurrio un error procesando tu retiro. Verifica montos disponibles o contacta soporte @franklinzerocr');
 }
 
 async function satsWithdrawalInstructionsMessage(ctx, fundsSats, fundsFIAT, minSats, minFIAT) {
-  ctx.reply('Retiro maximo: ' + fundsSats + ' sats ($' + fundsFIAT + ')\nRetiro minimo: ' + minSats + ' sats ($' + minFIAT + ')');
-  ctx.replyWithMarkdown('*- Ingresa el monto en* _sats_ *a retirar o /backToMenu:*');
+  await ctx.reply('Retiro maximo: ' + fundsSats + ' sats ($' + fundsFIAT + ')\nRetiro minimo: ' + minSats + ' sats ($' + minFIAT + ')');
+  await ctx.replyWithMarkdown('*- Ingresa el monto en* _sats_ *a retirar o /backToMenu:*');
 }
 
 async function fiatWithdrawalInstructionsMessage(ctx, fundsFIAT, minFIAT) {
-  ctx.reply('Retiro maximo: $' + fundsFIAT + '\nRetiro minimo: $' + minFIAT);
-  ctx.replyWithMarkdown('*- Ingresa el monto en* _FIAT_ *a retirar o /backToMenu:*');
+  await ctx.reply('Retiro maximo: $' + fundsFIAT + '\nRetiro minimo: $' + minFIAT);
+  await ctx.replyWithMarkdown('*- Ingresa el monto en* _FIAT_ *a retirar o /backToMenu:*');
 }
 
 async function walletUpdateMessage(ctx) {
-  ctx.reply('✅ Wallet Actualizada');
+  await ctx.reply('✅ Wallet Actualizada');
 }
 
 async function realWalletMessage(ctx) {
-  ctx.reply('🚫 Porfavor ingresa una Wallet correcta o /backToMenu');
+  await ctx.reply('🚫 Porfavor ingresa una Wallet correcta o /backToMenu');
 }
 
 async function notUniqueTxidMessage(ctx) {
-  ctx.reply('🚫 Ese txid ya se encuentra registrado. Porfavor ingresa el txid correcto o /backToMenu');
+  await ctx.reply('🚫 Ese txid ya se encuentra registrado. Porfavor ingresa el txid correcto o /backToMenu');
 }
 
 async function updateWalletAddressInstructionalMessage(ctx, wallet) {
@@ -140,7 +140,7 @@ async function updateWalletAddressInstructionalMessage(ctx, wallet) {
 }
 
 async function helpMessage(ctx, user) {
-  ctx.replyWithMarkdown('Hola ' + user.Username + '!\nMuy bien que estes usando mi *Beermoney BOT* 🤖\n\nBeermoney es un Bot de Trading Algoritmico con Bitcoin que opera en Binance 24/7\n\nEl Bot compra shitcoins en el mercado spot y las vende por un precio superior de satoshis haciendo scalping trading. Todo esto dictado por un algoritmo desarrollador por mi @franklinzerocr. Este algoritmo esta evolucionando y desarrollandose constantemente para garantizar mas y mejores ganancias 💪\n\nLo primero que debes hacer es configurar tus direcciones de retiro. Para ello debes ir a /config, seleccionar la moneda a o configurar y colocar la direccion de walletde tu cuenta de Binance. *No acepta direcciones de wallet externas a binance por ahora*\n\nLuego debes depositar tu saldo en Beermoney en la opcion de /depositar. Alli encontraras la direcciones de deposito de cada una de las monedas de Beermoney. Todas son direcciones de Binance, asi que si transfieres desde tu cuenta binance, no pagaras la comision al ser una transferencia interna. Pero de igual forma si depositar desde una wallet externa a esa direccion\n\nUna vez hecha la transferencia, copia el txid (numero de transaccion) de tu historial y pegalo cuando la opcion de /depositar te lo pida y listo: *Ya hiciste tu deposito a Beermoney para que empiece a operar con tu inversion*, pero no sera hasta la proxima actualizacion del sistema de Beermoney que se actualizara tu saldo ✅\n\n*Beermoney trabaja con una actualizacion diaria a las 00:00 GMT (8:00pm VE) en donde reparte las ganancias a sus miembro, acredita todos los depositos realizados durante el dia a sus respectivas cuentas y ejecuta los retiros a realizar. A su vez, envía un reporte diario con tus ganancias respectivas y el progreso de tu cuenta.*\n\nPuedes retirar parte o la totalidad de tus fondos cuando quieras. Pero te sugiero que lo dejes la mayor cantidad de tiempo disponible para poder obtener mas beneficios y disfrutar del interes compuesto hasta que tu capacidad lo permita. Recordando que al retirar, se hace la solicitud para que en la proxima actualizacion del sistema ejecute tu retiro ✅\n\nPara retirar solo debes darle a la opcion de /retirar, elegir que moneda deseas retirar ya sea BTC, USDT, BUSD o ETH. El retiro se ejecutara en la próxima actualizacion a la direccion de tu wallet que tienes registrada en tu configuracion.\n\nPor ultimo los usuarios tienen una capacidad maxima de fondos que pueden tener dentro de Beermoney. Esto significa que no pueden tener fondos que superen esta capacidad maxima dentro de su saldo. Esta capacidad la puedes revisar en /saldo.\n\n*Todos los dias el bot ejecuta un retiro automatico a la direccion del usuario con el excedente de la capacidad maxima + el retiro minimo* 👍\n\n*Es decir si tu capacidad es de 0.0015 BTC, cuando llegues a 0.00207BTC (capacidad+retiro minimo) el bot retira tu excedente de 0.00057 BTC*\n\nEsto se realizar porque el Bot esta limitado a un volumen maximo porque trabaja en mercados de poca liquidez. Mientras le haga mas mejoras al algoritmo de Beermoney, mas podria aumentar dicha capacidad.\n\nHabiendo dicho todo esto recuerda que puedes contactarme directamente por @franklinzerocr y suscribete al canal privado de resultados que consigues en /privatechannel 🍺😎');
+  await ctx.replyWithMarkdown('Hola ' + user.Username + '!\nMuy bien que estes usando mi *Beermoney BOT* 🤖\n\nBeermoney es un Bot de Trading Algoritmico con Bitcoin que opera en Binance 24/7\n\nEl Bot compra shitcoins en el mercado spot y las vende por un precio superior de satoshis haciendo scalping trading. Todo esto dictado por un algoritmo desarrollador por mi @franklinzerocr. Este algoritmo esta evolucionando y desarrollandose constantemente para garantizar mas y mejores ganancias 💪\n\nLo primero que debes hacer es configurar tus direcciones de retiro. Para ello debes ir a /config, seleccionar la moneda a o configurar y colocar la direccion de walletde tu cuenta de Binance. *No acepta direcciones de wallet externas a binance por ahora*\n\nLuego debes depositar tu saldo en Beermoney en la opcion de /depositar. Alli encontraras la direcciones de deposito de cada una de las monedas de Beermoney. Todas son direcciones de Binance, asi que si transfieres desde tu cuenta binance, no pagaras la comision al ser una transferencia interna. Pero de igual forma si depositar desde una wallet externa a esa direccion\n\nUna vez hecha la transferencia, copia el txid (numero de transaccion) de tu historial y pegalo cuando la opcion de /depositar te lo pida y listo: *Ya hiciste tu deposito a Beermoney para que empiece a operar con tu inversion*, pero no sera hasta la proxima actualizacion del sistema de Beermoney que se actualizara tu saldo ✅\n\n*Beermoney trabaja con una actualizacion diaria a las 00:00 GMT (8:00pm VE) en donde reparte las ganancias a sus miembro, acredita todos los depositos realizados durante el dia a sus respectivas cuentas y ejecuta los retiros a realizar. A su vez, envía un reporte diario con tus ganancias respectivas y el progreso de tu cuenta.*\n\nPuedes retirar parte o la totalidad de tus fondos cuando quieras. Pero te sugiero que lo dejes la mayor cantidad de tiempo disponible para poder obtener mas beneficios y disfrutar del interes compuesto hasta que tu capacidad lo permita. Recordando que al retirar, se hace la solicitud para que en la proxima actualizacion del sistema ejecute tu retiro ✅\n\nPara retirar solo debes darle a la opcion de /retirar, elegir que moneda deseas retirar ya sea BTC, USDT, BUSD o ETH. El retiro se ejecutara en la próxima actualizacion a la direccion de tu wallet que tienes registrada en tu configuracion.\n\nPor ultimo los usuarios tienen una capacidad maxima de fondos que pueden tener dentro de Beermoney. Esto significa que no pueden tener fondos que superen esta capacidad maxima dentro de su saldo. Esta capacidad la puedes revisar en /saldo.\n\n*Todos los dias el bot ejecuta un retiro automatico a la direccion del usuario con el excedente de la capacidad maxima + el retiro minimo* 👍\n\n*Es decir si tu capacidad es de 0.0015 BTC, cuando llegues a 0.00207BTC (capacidad+retiro minimo) el bot retira tu excedente de 0.00057 BTC*\n\nEsto se realizar porque el Bot esta limitado a un volumen maximo porque trabaja en mercados de poca liquidez. Mientras le haga mas mejoras al algoritmo de Beermoney, mas podria aumentar dicha capacidad.\n\nHabiendo dicho todo esto recuerda que puedes contactarme directamente por @franklinzerocr y suscribete al canal privado de resultados que consigues en /privatechannel 🍺😎');
 }
 
 module.exports = {

@@ -12,6 +12,7 @@ async function go(DBsystem, DBbeermoney, binanceAPI) {
   bot.start(async (ctx) => {
     let user = await checkAuth(DBsystem, ctx.update.message.from.username, ctx.update.message.from.id, ctx, bot);
     if (user) {
+      // console.log(ctx.update.message);
       await welcomeMessage(ctx, user);
       await mainMenuMessage(ctx);
       await beermoneyCommands(bot, DBsystem, binanceAPI);
