@@ -94,14 +94,14 @@ async function alertReport(bot, dbConnection) {
 
         // PROFIT
         if (floor.NetProfit - 100 >= 0) {
-          message += '#TradingPlan' + floor.FK_Trading_Plan + 'END\n\n';
+          message += '#TradingPlan' + floor.FK_Trading_Plan + ' END\n\n';
           message += '#' + floor.Asset + ' / ' + floor.Pair + '\n';
           message += 'Exit Sell Price: ' + floor.Price + '\n';
           message += 'Duration: ' + dateDiff + 'min\n';
           message += 'Profit: ' + (floor.NetProfit - 100).toFixed(2) + '% 😎🍺';
           // LOSS
         } else {
-          message += '#TradingPlan' + floor.FK_Trading_Plan + 'END\n\n';
+          message += '#TradingPlan' + floor.FK_Trading_Plan + ' END\n\n';
           message += '#' + floor.Asset + ' / ' + floor.Pair + '\n';
           message += 'Exit Sell Price: ' + floor.Price + '\n';
           message += 'Duration: ' + dateDiff + 'min\n';

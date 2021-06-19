@@ -34,7 +34,7 @@ async function postTopPrice(bot, dbConnection, binanceAPI, floor, initialFloor) 
       message += '#' + floor.Asset + ' / ' + floor.Pair + '\n';
       message += 'Top Price: ' + highestPrice + '\n';
       message += 'Profit so far: ' + profit + '% 😎🍺\n\n';
-      message += '#AlgoTrade';
+      message += '#AlgorithmicTrade';
 
       status = await bot.telegram.sendMessage(config.beermoneySignals, message, { reply_to_message_id: initialFloor.SignalsID });
       updateTelegramFloorSignals(dbConnection, floor, status.message_id);
