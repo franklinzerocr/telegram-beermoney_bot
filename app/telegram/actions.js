@@ -11,6 +11,7 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
   await bot.command('/saldo', async (ctx, next) => {
     await next();
     console.log(ctx.update.message);
+    console.log(new Date());
     let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id);
     if (user) {
       for (let asset of assets) {
@@ -34,6 +35,7 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
 
   await bot.command('/privatechannel', async (ctx, next) => {
     console.log(ctx.update.message);
+    console.log(new Date());
     let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id);
     if (user) {
       await resultsChannelMessage(ctx, bot);
@@ -45,6 +47,7 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
 
   await bot.command('/help', async (ctx, next) => {
     console.log(ctx.update.message);
+    console.log(new Date());
     let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id);
     if (user) {
       await helpMessage(ctx, user);
@@ -56,6 +59,7 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
 
   await bot.command('/depositar', async (ctx) => {
     console.log(ctx.update.message);
+    console.log(new Date());
     let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id);
 
     if (user) {
@@ -69,6 +73,7 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
 
   await bot.command('/config', async (ctx, next) => {
     console.log(ctx.update.message);
+    console.log(new Date());
     let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id);
 
     if (user) {
@@ -89,6 +94,7 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
 
   bot.command('/moneda', async (ctx) => {
     console.log(ctx.update.message);
+    console.log(new Date());
     let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id);
 
     if (user) {
@@ -101,6 +107,7 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
 
   bot.command('/retirar', async (ctx) => {
     console.log(ctx.update.message);
+    console.log(new Date());
     let user = await checkAuth(dbConnection, ctx.update.message.from.username, ctx.update.message.from.id);
 
     if (user) {
@@ -119,7 +126,12 @@ async function beermoneyCommands(bot, dbConnection, binanceAPI, user) {
 function beermoneyDefaultListener(bot) {
   // Default response
   bot.on('text', async (ctx) => {
-    if (ctx.update.message.text.includes('/backToMenu') || ctx.update.message.text.includes('/menu') || !ctx.update.message.text.includes('/')) await mainMenuMessage(ctx);
+    console.log(ctx.update.message);
+    console.log(new Date());
+
+    if (ctx.update.message.text.includes('/backToMenu') || ctx.update.message.text.includes('/menu') || !ctx.update.message.text.includes('/')) {
+      await mainMenuMessage(ctx);
+    }
   });
 }
 

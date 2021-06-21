@@ -51,7 +51,6 @@ async function dailyReport(bot, dbConnection, binanceAPI) {
           let ROI = (((funds[0].Amount - operationsBalance) * 100) / funds[1].Amount - 100).toFixed(2);
           let earnings = funds[0].Profit;
           earnings = asset == 'BTC' && user.Display == 'sats' ? util.numberWithCommas(util.btcToSatoshi(earnings)) + ' sats' : earnings + ' ' + asset;
-          ticker = util.numberWithCommas(Math.floor(ticker));
           await dailyReportMessage(bot, user, fundsDisplay, fundsFIAT, ROI, earnings, unconfirmedOperations.length, operationsBalance, operationsBalanceDisplay, funds[0].Amount, asset);
         }
       }
