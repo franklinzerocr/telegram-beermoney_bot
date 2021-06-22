@@ -30,7 +30,7 @@ async function postTopPrice(bot, dbConnection, binanceAPI, floor, initialFloor) 
 
       let profit = ((auxHighestPrice * 100) / initialFloor.Price - 100).toFixed(2);
 
-      let message = '#TradingPlan' + floor.FK_Trading_Plan;
+      let message = '#TradingPlan' + floor.FK_Trading_Plan + '\n';
       message += '#' + floor.Asset + ' / ' + floor.Pair + '\n';
       message += 'Top Price: ' + highestPrice + '\n';
       message += 'Profit so far: ' + profit + '% 😎🍺\n\n';
