@@ -16,7 +16,7 @@ async function getTicker(binanceAPI) {
 async function postTopPrice(bot, dbConnection, binanceAPI, floor, initialFloor) {
   let init = +new Date(initialFloor.DateTime) - 60000;
   await binanceAPI.candlesticks(
-    floor.Asset + 'BTC',
+    floor.Asset + floor.Pair,
     '1m',
     async function (error, ticks, symbol) {
       if (error) console.log('error', error.body);

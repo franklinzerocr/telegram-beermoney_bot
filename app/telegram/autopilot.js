@@ -78,7 +78,7 @@ async function alertReport(bot, dbConnection) {
 
       // ENTRY
       if (floor.Level == 0) {
-        message += '#TradingPlan' + floor.FK_Trading_Plan + ' START! 🏁\n\n';
+        message += '#TradingPlan' + floor.FK_Trading_Plan + ' START! 🚩\n\n';
         message += '#' + floor.Asset + ' / ' + floor.Pair + '\n';
         message += 'Entry Buy Price: ' + floor.Price + '\n';
         // message += 'Channel: ' + alert.Channel;
@@ -136,7 +136,7 @@ async function beermoneySignals(bot, dbConnection, binanceAPI) {
 
       // ENTRY
       if (floor.Level == 0) {
-        message += '#TradingPlan' + floor.FK_Trading_Plan + ' START 🏁\n\n';
+        message += '#TradingPlan' + floor.FK_Trading_Plan + ' START 🚩\n\n';
         message += '#' + floor.Asset + ' / ' + floor.Pair + '\n';
         message += 'Entry Buy Price: ' + floor.Price + '\n';
         // message += 'Channel: ' + alert.Channel;
